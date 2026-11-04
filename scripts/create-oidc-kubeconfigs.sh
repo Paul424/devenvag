@@ -20,7 +20,7 @@ function up_kc_config {
     local CLIENT_ID=kubernetes
     local ISSUER=https://keycloak.devenv.local/realms/me-yoda
     local ENDPOINT=$ISSUER/protocol/openid-connect/token
-    local CA_DATA=$(cat $BASE/ca/deag-keycloak-ca.crt | base64 -w 0)
+    local CA_DATA=$(cat $BASE/ca/keycloak/ca.crt | base64 -w 0)
     local ID_TOKEN=$(curl -k -X POST $ENDPOINT \
         -d grant_type=password \
         -d client_id=$CLIENT_ID \
@@ -58,7 +58,7 @@ function oidc_login_config {
         --exec-arg=get-token \
         --exec-arg=--oidc-issuer-url=$ISSUER \
         --exec-arg=--oidc-client-id=$CLIENT_ID \
-        --exec-arg=--certificate-authority=$BASE/ca/deag-keycloak-ca.crt 
+        --exec-arg=--certificate-authority=$BASE/ca/keycloak/ca.crt 
     kubectl config set-context $USERNAME --cluster=$CLUSTER_NAME --user=$USERNAME
 }
 

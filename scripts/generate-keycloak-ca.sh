@@ -3,6 +3,8 @@ set -euxo pipefail
 
 BASE=$(dirname $(dirname $(realpath $0)))
 
+mkdir -p $BASE/ca/keycloak
+
 # private key (ECDSA P-256)
 if [ ! -f "$BASE/ca/keycloak/ca.key" ]; then
     openssl ecparam -name prime256v1 -genkey -noout -out $BASE/ca/keycloak/ca.key
@@ -13,7 +15,7 @@ fi
 # self-signed CA-certificaat, 10y valid
 if [ ! -f "$BASE/ca/keycloak/ca.crt" ]; then
     openssl req -x509 -new -key $BASE/ca/keycloak/ca.key -sha256 -days 3650 \
-    -subj "/CN=keycloak/ca" \
+    -subj "/CN=keycloak-ca" \
     -addext "basicConstraints=critical,CA:TRUE" \
     -addext "keyUsage=critical,keyCertSign,cRLSign" \
     -addext "subjectKeyIdentifier=hash" \

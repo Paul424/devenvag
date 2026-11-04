@@ -53,13 +53,13 @@ INFO[0292] Synced 13 images from 13 sources
 
 ```
 127.0.0.1 registry.dev.local
+127.0.0.1 host.minikube.internal
 ```
 
 ## Bootstrap
 
-Run a bootstrap (and fallback) registry (zot)
+Bootstrap the registry (zot) and the minikube cluster
 ```
-docker run --rm -p 5000:5000 -v "$PWD/zot-data:/var/lib/registry" \
-  ghcr.io/project-zot/zot-linux-amd64:latest
+bash ./scripts/bootstrap.sh 
 ```
 

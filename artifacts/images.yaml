@@ -25,6 +25,19 @@ quay.io:
     calico/kube-controllers: ["v3.32.2"]
     calico/cni: ["v3.32.2"]
 
+
+# ▪ Using image host.minikube.internal:5000/metallb/speaker:v0.9.6@sha256:7a400205b4986acd3d2ff32c29929682b8ff8d830837aff74f787c757176fa9f (global image repository)
+# ▪ Using image host.minikube.internal:5000/metallb/controller:v0.9.6@sha256:6932cf255dd7f06f550c7f106b9a206be95f847ab8cb77aafac7acd27def0b00 (global image repository)
+# ▪ Using image host.minikube.internal:5000/sig-storage/hostpathplugin:v1.9.0@sha256:92257881c1d6493cf18299a24af42330f891166560047902b8d431fb66b01af5 (global image repository)
+# ▪ Using image host.minikube.internal:5000/sig-storage/livenessprobe:v2.8.0@sha256:cacee2b5c36dd59d4c7e8469c05c9e4ef53ecb2df9025fa8c10cdaf61bce62f0 (global image repository)
+# ▪ Using image host.minikube.internal:5000/sig-storage/csi-resizer:v1.6.0@sha256:425d8f1b769398127767b06ed97ce62578a3179bcb99809ce93a1649e025ffe7 (global image repository)
+# ▪ Using image host.minikube.internal:5000/sig-storage/csi-snapshotter:v6.1.0@sha256:291334908ddf71a4661fd7f6d9d97274de8a5378a2b6fdfeb2ce73414a34f82f (global image repository)
+# ▪ Using image host.minikube.internal:5000/sig-storage/csi-provisioner:v3.3.0@sha256:ee3b525d5b89db99da3b8eb521d9cd90cb6e9ef0fbb651e98bb37be78d36b5b8 (global image repository)
+# ▪ Using image host.minikube.internal:5000/sig-storage/csi-attacher:v4.0.0@sha256:9a685020911e2725ad019dbce6e4a5ab93d51e3d4557f115e64343345e05781b (global image repository)
+# ▪ Using image host.minikube.internal:5000/sig-storage/csi-external-health-monitor-controller:v0.7.0@sha256:80b9ba94aa2afe24553d69bd165a6a51552d1582d68618ec00d3b804a7d9193c (global image repository)
+# ▪ Using image host.minikube.internal:5000/sig-storage/csi-node-driver-registrar:v2.6.0@sha256:f1c25991bac2fbb7f5fcf91ed9438df31e30edee6bed5a780464238aa09ad24c (global image repository)
+
+
 # quay.io/prometheus/prometheus:v3.11.3-distroless
 # quay.io/prometheus/node-exporter:v1.11.1-distroless
 # quay.io/prometheus/alertmanager:v0.32.1

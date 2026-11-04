@@ -3,6 +3,8 @@ set -euxo pipefail
 
 BASE=$(dirname $(dirname $(realpath $0)))
 
+mkdir -p $BASE/ca/zot
+
 # CA
 if [ ! -f "$BASE/ca/zot/ca.key" ]; then
     openssl genrsa -out $BASE/ca/zot/ca.key 4096
@@ -31,7 +33,7 @@ else
 fi
 
 cat > $BASE/ca/zot/san.ext << 'EOF'
-subjectAltName = DNS:registry.dev.local, DNS:localhost, IP:192.168.1.10
+subjectAltName = DNS:host.minikube.internal, DNS:registry.dev.local, DNS:localhost
 extendedKeyUsage = serverAuth
 EOF
 
