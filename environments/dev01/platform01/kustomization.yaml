@@ -6,7 +6,7 @@ resources:
 - metallb.yaml
 - storageclass.yaml
 
-image:
+images:
   - name: quay.io/jetstack/cert-manager-cainjector
     newName: host.minikube.internal:5000/quay.io/jetstack/cert-manager-cainjector
   - name: quay.io/jetstack/cert-manager-controller
