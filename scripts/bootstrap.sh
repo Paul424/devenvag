@@ -53,8 +53,15 @@ kubectl wait --for=condition=available --timeout "300s" -n flux "deployment/noti
 kubectl wait --for=condition=available --timeout "300s" -n flux "deployment/source-controller"
 
 # Publish the initial cluster configuration to the zot OCI registry
-# flux push artifact oci://registry.dev.local:5000/platform/cluster:v1 \
-#   --path=./platform --source="$(git config --get remote.origin.url)" --revision="v1"
+SSL_CERT_FILE=$BASE/ca/zot/ca.crt flux push artifact oci://registry.dev.local:5000/platform/cluster:v1 \
+  --path=./environments \
+  --source="local" \
+  --revision="v1"
+
+# Make the ca available to the source (controller)
+kubectl create secret generic registry-zot-ca -n env \
+    --from-file=ca.crt=$BASE/ca/zot/ca.crt \
+    --dry-run=client -o yaml | kubectl apply -f -
 
 # For temp / dev only first develop against the public repo, then later replace with OCI artifact
 # Git (private) repo credentials
@@ -64,4 +71,4 @@ kubectl create secret generic private-git -n env \
     --dry-run=client -o yaml | kubectl apply -f -
 
 # The top level reconciler
-# kubectl apply -k $BASE/environments/dev01/env
+kubectl apply -k $BASE/environments/dev01/env

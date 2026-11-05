@@ -1,4 +1,5 @@
 ---
+# The (upstream) source only for initial development for the bootstrapping
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -11,12 +12,19 @@ spec:
     branch: main
   secretRef:
     name: private-git
-# ---
-# apiVersion: source.toolkit.fluxcd.io/v1
-# kind: OCIRepository
-# metadata: { name: platform, namespace: flux-system }
-# spec:
-#   interval: 5m
-#   url: oci://host.minikube.internal:5000/platform/cluster
-#   ref: { tag: v1 }
-#   certSecretRef: { name: registry-ca }   # secret met key ca.crt
+---
+# The zot backed OCI repo for the initial manifests for the bootstrapping; this is used before harbor is up and running
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: devenvag
+  namespace: env
+spec:
+  interval: 5m
+  url: oci://host.minikube.internal:5000/platform/cluster
+  ref:
+    tag: v1
+  certSecretRef:
+    name: registry-zot-ca
+---
+# Add another GitRepository here to pull state from Harbor, it replaces the OCIRepository once Harbor is up and repo is sync'ed

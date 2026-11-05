@@ -16,4 +16,6 @@ to download registry.dev.local:5000/kicbase:v0.0.51, b
 docker pull registry.dev.local:5000/pause:3.10.2
 
 
+ from="dir:/home/pbox/projects/devenvag/artifacts/transfer/quay.io/metallb/speaker:v0.9.6" to="docker://registry.dev.local:5000/quay.io/speaker:v0.9.6"
+
 docker pull registry.dev.local:5000/quay.io/speaker:v0.9.6

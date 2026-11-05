@@ -2,16 +2,76 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: platform
+  name: platform-01
   namespace: env
 spec:
   interval: 1m
   sourceRef:
     kind: GitRepository
-    name: harbor
-  path: ./environments/dev01/harbor/
+    name: devenvag
+  # sourceRef:
+  #   kind: OCIRepository
+  #   name: devenvag
+  path: ./environments/dev01/platform-01/
   prune: true
   decryption:
     provider: sops
     secretRef:
       name: sops-gpg
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: cert-manager
+      namespace: cert-manager
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: cert-manager-cainjector
+      namespace: cert-manager
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: cert-manager-webhook
+      namespace: cert-manager
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: platform-02
+  namespace: env
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: devenvag
+  # sourceRef:
+  #   kind: OCIRepository
+  #   name: devenvag
+  path: ./environments/dev01/platform-02/
+  prune: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
+  dependsOn:
+    - name: platform-01
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: platform-09
+  namespace: env
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: devenvag
+  # sourceRef:
+  #   kind: OCIRepository
+  #   name: devenvag
+  path: ./environments/dev01/platform-09/
+  prune: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
+  dependsOn:
+    - name: platform-02

@@ -6,8 +6,6 @@ configurations:
 
 resources:
 - ../../base/gitops/flux
-- metallb.yaml
-- storageclass.yaml
 
 images:
   - name: ghcr.io/fluxcd/helm-controller
@@ -18,3 +16,15 @@ images:
     newName: host.minikube.internal:5000/ghcr.io/fluxcd/notification-controller
   - name: ghcr.io/fluxcd/source-controller
     newName: host.minikube.internal:5000/ghcr.io/fluxcd/source-controller
+
+patches:
+  - target:
+      kind: Deployment
+      name: source-controller
+    patch: |
+      # Enabled the source-controller to reach the zot registry running on the (local) host.
+      - op: add
+        path: /spec/template/spec/hostAliases
+        value:
+          - hostnames: ["host.minikube.internal"]
+            ip: "192.168.49.1"

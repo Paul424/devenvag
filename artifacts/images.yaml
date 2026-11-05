@@ -38,6 +38,9 @@ quay.io:
     calico/node: ["v3.32.2"]
     calico/kube-controllers: ["v3.32.2"]
     calico/cni: ["v3.32.2"]
+    jetstack/cert-manager-webhook: ["v1.20.3"]
+    jetstack/cert-manager-controller: ["v1.20.3"]
+    jetstack/cert-manager-cainjector: ["v1.20.3"]
 
 
 # quay.io/prometheus/prometheus:v3.11.3-distroless
@@ -46,9 +49,6 @@ quay.io:
 # quay.io/prometheus-operator/prometheus-operator:v0.90.1
 # quay.io/prometheus-operator/prometheus-config-reloader:v0.90.1
 # quay.io/kiwigrid/k8s-sidecar:2.7.1
-# quay.io/jetstack/cert-manager-webhook:v1.20.3
-# quay.io/jetstack/cert-manager-controller:v1.20.3
-# quay.io/jetstack/cert-manager-cainjector:v1.20.3
 # ghcr.io/jkroepke/kube-webhook-certgen:1.8.2
 # ghcr.io/deefthefreeze/infra-visualizer:latest
 # docker.io/library/traefik:v3.7.16
