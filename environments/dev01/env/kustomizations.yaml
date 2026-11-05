@@ -1,0 +1,17 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: platform
+  namespace: env
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: harbor
+  path: ./environments/dev01/harbor/
+  prune: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg

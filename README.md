@@ -4,6 +4,14 @@ This is just a small test to setup an airgapped development environment with too
 - gitlab + runners
 - harbor
 
+## Todo's
+
+- flux toevoegen met kustomize en environment tegen zot oci; dus een cluster artifact publiceren
+- Add harbor /w preconfigured secret
+- kip ei probleem; harbor liefst met chart, vereist flux vereist git, git komt pas met gitlab...
+- 
+
+
 ## Technical challenges
 
 **Bootstrap using local / private registry**
@@ -12,9 +20,13 @@ This is just a small test to setup an airgapped development environment with too
 2. [Zot registry](https://zotregistry.dev/v2.1.23/) for a temp. OCI compliant registry
 3. minikube confs to ensure artifact loading from private registry
 
-**Switch over to HA registry on the same cluster**
+*learnings*
 
-x
+1. Zot using a docker container /w hostname defined by minicube (host.minikube.internal) only works in this single node setup.
+
+    For a multi node cluster setup i would use a dedicated bootstrap machine which runs zot using a daemon and make it reachable through a dns server / netw routing.
+
+2. A zot registry should not be temporarily but permanent but only for bootstrap images, where bootstrapping means up to the point where harbor is running and can take over.
 
 **HA Gitlab /w dependencies**
 
@@ -55,6 +67,10 @@ INFO[0292] Synced 13 images from 13 sources
 127.0.0.1 registry.dev.local
 127.0.0.1 host.minikube.internal
 ```
+
+## Sops setup (one time only)
+
+To setup (once) see [sops setup guide](./docs/SOPS.md)
 
 ## Bootstrap
 

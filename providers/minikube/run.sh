@@ -41,11 +41,22 @@ minikube start \
     --extra-config=apiserver.oidc-groups-claim=groups \
     --extra-config=apiserver.oidc-ca-file=/var/lib/minikube/certs/keycloak-ca.crt
 
-    # --insecure-registry="registry.dev.local:5000" \
-# 
-
 minikube ip
-minikube addons enable metallb
-minikube addons enable csi-hostpath-driver
+
+# minikube addons images metallb
+minikube addons enable metallb \
+  --images="Speaker=quay.io/metallb/speaker:v0.9.6,Controller=quay.io/metallb/controller:v0.9.6"
+
+# minikube addons images csi-hostpath-driver
+minikube addons enable csi-hostpath-driver \
+  --images="\
+HostMonitorController=registry.k8s.io/sig-storage/csi-external-health-monitor-controller:v0.7.0,\
+NodeDriverRegistrar=registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.6.0,\
+HostPathPlugin=registry.k8s.io/sig-storage/hostpathplugin:v1.9.0,\
+LivenessProbe=registry.k8s.io/sig-storage/livenessprobe:v2.8.0,\
+Resizer=registry.k8s.io/sig-storage/csi-resizer:v1.6.0,\
+Snapshotter=registry.k8s.io/sig-storage/csi-snapshotter:v6.1.0,\
+Provisioner=registry.k8s.io/sig-storage/csi-provisioner:v3.3.0,\
+Attacher=registry.k8s.io/sig-storage/csi-attacher:v4.0.0"
 
 kubectl get nodes

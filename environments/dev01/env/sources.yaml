@@ -1,0 +1,22 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: devenvag
+  namespace: env
+spec:
+  interval: 1m
+  url: https://github.com/Paul424/devenvag.git
+  ref:
+    branch: main
+  secretRef:
+    name: private-git
+# ---
+# apiVersion: source.toolkit.fluxcd.io/v1
+# kind: OCIRepository
+# metadata: { name: platform, namespace: flux-system }
+# spec:
+#   interval: 5m
+#   url: oci://host.minikube.internal:5000/platform/cluster
+#   ref: { tag: v1 }
+#   certSecretRef: { name: registry-ca }   # secret met key ca.crt

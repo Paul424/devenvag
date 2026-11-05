@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+configurations:
+- namerefs.yaml
+
+resources:
+- ../../base/gitops/flux
+- metallb.yaml
+- storageclass.yaml
+
+images:
+  - name: ghcr.io/fluxcd/helm-controller
+    newName: host.minikube.internal:5000/ghcr.io/fluxcd/helm-controller
+  - name: ghcr.io/fluxcd/kustomize-controller
+    newName: host.minikube.internal:5000/ghcr.io/fluxcd/kustomize-controller
+  - name: ghcr.io/fluxcd/notification-controller
+    newName: host.minikube.internal:5000/ghcr.io/fluxcd/notification-controller
+  - name: ghcr.io/fluxcd/source-controller
+    newName: host.minikube.internal:5000/ghcr.io/fluxcd/source-controller
