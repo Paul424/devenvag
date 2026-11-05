@@ -5,8 +5,9 @@ BASE=$(dirname $(dirname $(realpath $0)))
 SOPS_KEY_NAME="dev.local"
 
 
-###################################################
+##############################################################################
 # Run a local zot registry for the bootstrap images
+#
 
 # Load the zot image into the docker daemon
 skopeo copy dir:$BASE/artifacts/transfer/ghcr.io/project-zot/zot:v2.1.11 \
@@ -30,11 +31,13 @@ until curl --fail --silent --cacert "$BASE/ca/zot/ca.crt" \
   sleep 1
 done
 
-# Push images to the local zot registry
+# Push charts and images to the local zot registry
 bash $BASE/scripts/vendor.sh push
 
-###################################################
+##############################################################################
 # Bootstrap cluster
+# 
+
 bash $BASE/providers/minikube/run.sh
 
 # Create the namespace for initial secrets
@@ -70,5 +73,5 @@ kubectl create secret generic private-git -n env \
     --from-literal=password=$REGISTRY_UPSTREAM_PAT \
     --dry-run=client -o yaml | kubectl apply -f -
 
-# The top level reconciler
+# The top level reconciler(s)
 kubectl apply -k $BASE/environments/dev01/env
