@@ -1,6 +1,6 @@
 image:
   registry: host.minikube.internal:5000
-  repository: docker.io/traefik
+  repository: docker.io/library/traefik
   # tag: v3.7.17
 
 ingressRoute:
