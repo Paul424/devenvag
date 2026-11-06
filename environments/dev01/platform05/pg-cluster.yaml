@@ -1,0 +1,18 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: gitlab-pg
+  namespace: gitlab
+spec:
+  instances: 1
+  imageName: host.minikube.internal:5000/ghcr.io/cloudnative-pg/postgresql:17.11-standard-trixie
+  bootstrap:
+    initdb:
+      database: gitlab
+      owner: gitlab
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS pg_trgm
+        - CREATE EXTENSION IF NOT EXISTS btree_gist
+        - CREATE EXTENSION IF NOT EXISTS plpgsql
+  storage:
+    size: 20Gi
