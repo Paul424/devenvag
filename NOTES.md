@@ -5,6 +5,12 @@
 - Harbor ingress over traefik
 - 
 
+Bereikbaarheid voor clients
+De hostnaam moet resolven vanaf je host (docker/skopeo), de minikube-node (containerd), en pods zoals GitLab-runners. De naam in externalURL moet overal hetzelfde IP geven. Gebruik daarvoor het MetalLB-IP van Traefik, met een CoreDNS hosts- of rewrite-regel in het cluster en /etc/hosts op de host en node.
+CA-trust: zet de CA in /etc/docker/certs.d/harbor.dev.local/ (denk aan rootless Docker: ~/.config/docker/certs.d/), in de hosts.toml van containerd en in ~/.minikube/certs/.
+Poort: Harbor draait op 443, dus je laat :5000 weg in je image-referenties.
+
+
 [20261105]
 
 - Add Traefik to 01

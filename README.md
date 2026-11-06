@@ -81,3 +81,9 @@ Bootstrap the registry (zot) and the minikube cluster
 bash ./scripts/bootstrap.sh 
 ```
 
+## Add trust for Harbor
+
+Extract the CA and add to truststore
+
+## Push to harbor
+

@@ -5,6 +5,7 @@ expose:
     certSource: secret
     secret:
       secretName: harbor-tls
+
   ingress:
     hosts:
       core: harbor.dev.local
@@ -18,6 +19,8 @@ externalURL: https://harbor.dev.local
 
 internalTLS:
   enabled: false
+
+caSecretName: harbor-tls
 
 # The initial password of Harbor admin. Change it from portal after launching Harbor or give an existing secret for it
 # key in secret is given via (default to HARBOR_ADMIN_PASSWORD)
