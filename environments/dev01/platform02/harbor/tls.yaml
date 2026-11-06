@@ -1,12 +1,5 @@
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: harbor-selfsigned-issuer
-spec:
-  selfSigned: {}
----
-apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: harbor-tls
@@ -18,5 +11,5 @@ spec:
   dnsNames:
   - harbor.dev.local
   issuerRef:
-    kind: Issuer
-    name: harbor-selfsigned-issuer
+    kind: ClusterIssuer
+    name: root-ca

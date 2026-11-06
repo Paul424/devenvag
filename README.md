@@ -88,3 +88,6 @@ Extract the CA and add to truststore
 
 ## Push to harbor
 
+```
+bash ./scripts/vendor.sh push-to-harbor
+```

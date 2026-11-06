@@ -4,14 +4,19 @@ set -euxo pipefail
 
 BASE=$(dirname $(dirname $(realpath $0)))
 if [[ "${1:-}" == "pull" ]]; then
+
+  ######################################################################################
   # Have skopeo pull all the images listed in artifacts/images.yaml and store them in artifacts/transfer 
   # while keeping metadata.
-  # @todo: login using PAT?
+  #
   skopeo sync --all --scoped --src yaml --dest dir $BASE/artifacts/images.yaml $BASE/artifacts/transfer
 
-elif [[ "${1:-}" == "push" ]]; then
+elif [[ "${1:-}" == "push-to-zot" ]]; then
+
+  ######################################################################################
   # Have skopeo push all the images listed in artifacts/images.yaml from artifacts/transfer to the airgapped registry. We walk the dir here to
   # maintain the registry and optional image prefix / path.
+  #
   while IFS= read -r -d '' manifest; do
     dir="$(dirname "$manifest")"
     ref="${dir#"$BASE/artifacts/transfer"/}"
@@ -42,4 +47,39 @@ elif [[ "${1:-}" == "push" ]]; then
     helm push "$chart" oci://registry.dev.local:5000/charts --ca-file "$BASE/ca/zot/ca.crt"
   done
 
+elif [[ "${1:-}" == "push-to-harbor" ]]; then
+
+  ######################################################################################
+  # Push images and charts to Harbor
+  #
+
+# curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/cluster-info \
+#   | jq -r '.data.kubeconfig' | grep -E 'server:|certificate-authority-data'
+curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/cluster-metadata \
+  | jq -r '.data["ca.crt"]' > ca.crt
+
+
+
+  while IFS= read -r -d '' manifest; do
+    dir="$(dirname "$manifest")"
+    ref="${dir#"$BASE/artifacts/transfer"/}"
+
+    if [[ "$ref" == "$dir" || "$ref" != *[:@]* ]]; then
+      echo "skip $dir"
+      continue
+    fi
+
+    dest="docker://harbor.dev.local/$ref"
+    echo "- $ref ==> $dest"
+    skopeo copy --all --dest-creds 'robot$pusher:frabar' --dest-cert-dir ./ca/harbor/ca.crt "dir:$dir" "$dest"
+
+# CA-trust: zet de CA in /etc/docker/certs.d/harbor.dev.local/ (denk aan rootless Docker: ~/.config/docker/certs.d/), 
+# in de hosts.toml van containerd en in ~/.minikube/certs/.
+
+
+
+
+  done < <(find "$BASE/artifacts/transfer" -name manifest.json -print0 | sort -z)
+
 fi
+

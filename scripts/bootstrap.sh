@@ -32,7 +32,7 @@ until curl --fail --silent --cacert "$BASE/ca/zot/ca.crt" \
 done
 
 # Push charts and images to the local zot registry
-bash $BASE/scripts/vendor.sh push
+bash $BASE/scripts/vendor.sh push-to-zot
 
 ##############################################################################
 # Bootstrap cluster

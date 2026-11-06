@@ -80,6 +80,11 @@ spec:
       name: sops-gpg
   dependsOn:
     - name: platform02
+  healthChecks:
+    - apiVersion: batch/v1
+      kind: Job
+      name: harbor-bootstrap
+      namespace: harbor
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

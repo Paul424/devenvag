@@ -29,7 +29,7 @@ spec:
               H=http://harbor-core.harbor.svc.cluster.local
               api() { curl -s -o /dev/null -w '%{http_code}' -u "admin:$PASS" \
                 -H 'Content-Type: application/json' -X POST "$H$1" -d "$2"; }
-              ok() { case "$1" in 201|409) echo "$2: ok ($1)";; *) echo "$2: FOUT ($1)"; exit 1;; esac; }
+              ok() { case "$1" in 201|409) echo "$2: ok ($1)";; *) echo "$2: failed ($1)"; exit 1;; esac; }
 
               for p in registry.k8s.io gcr.io quay.io ghcr.io docker.io; do
                 ok "$(api /api/v2.0/projects "{\"project_name\":\"$p\",\"public\":false}")" "project $p"

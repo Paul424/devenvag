@@ -46,7 +46,8 @@ quay.io:
     jetstack/cert-manager-webhook: ["v1.20.3"]
     jetstack/cert-manager-controller: ["v1.20.3"]
     jetstack/cert-manager-cainjector: ["v1.20.3"]
-
+    jetstack/trust-pkg-debian-trixie: ["20250419-deb13u1.1"]
+    jetstack/trust-manager: ["v0.26.0"]
 
 # quay.io/prometheus/prometheus:v3.11.3-distroless
 # quay.io/prometheus/node-exporter:v1.11.1-distroless

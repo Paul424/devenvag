@@ -14,3 +14,7 @@ images:
     newName: host.minikube.internal:5000/quay.io/jetstack/cert-manager-controller
   - name: quay.io/jetstack/cert-manager-webhook
     newName: host.minikube.internal:5000/quay.io/jetstack/cert-manager-webhook
+  - name: quay.io/jetstack/trust-pkg-debian-trixie
+    newName: host.minikube.internal:5000/quay.io/jetstack/trust-pkg-debian-trixie
+  - name: quay.io/jetstack/trust-manager
+    newName: host.minikube.internal:5000/quay.io/jetstack/trust-manager
