@@ -2,6 +2,7 @@
 docker.io:
   images:
     traefik: ["v3.7.17"]
+    nicolaka/netshoot: ["v0.16"]
 
 ghcr.io:
   images:
