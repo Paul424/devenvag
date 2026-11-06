@@ -1,5 +1,12 @@
 # Notes
 
+[20261105]
+
+- Add Traefik to 01
+- Configure Harbor (02) with vendpred images, ingress, etc...
+- 
+
+
 [20261104]
 
 minikube was unable to download 

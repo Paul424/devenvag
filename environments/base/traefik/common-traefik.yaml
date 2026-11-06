@@ -1,0 +1,9 @@
+providers:
+  kubernetesGateway:
+    enabled: false
+
+gateway:
+  listeners:
+    web:
+      namespacePolicy:
+        from: All
