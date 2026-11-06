@@ -10,6 +10,16 @@ De hostnaam moet resolven vanaf je host (docker/skopeo), de minikube-node (conta
 CA-trust: zet de CA in /etc/docker/certs.d/harbor.dev.local/ (denk aan rootless Docker: ~/.config/docker/certs.d/), in de hosts.toml van containerd en in ~/.minikube/certs/.
 Poort: Harbor draait op 443, dus je laat :5000 weg in je image-referenties.
 
+curl -s -u "admin:admin" --cacert ./ca/harbor/ca.crt   'https://harbor.dev.local/api/v2.0/robots' | jq '.[]|select(.name=="robot$pusher")|.id'
+3
+ID=$(curl -s -u "admin:admin" --cacert ./ca/harbor/ca.crt   'https://harbor.dev.local/api/v2.0/robots' | jq '.[]|select(.name=="robot$pusher")|.id')
+curl -s -o /dev/null -w '%{http_code}\n' -u 'robot$pusher:Frabar01' --cacert ./ca/harbor/ca.crt https://harbor.dev.local/v2/
+
+curl -i -u "admin:admin" --cacert ./ca/harbor/ca.crt -H 'Content-Type: application/json' -X PATCH "https://harbor.dev.local/api/v2.0/robots/$ID" -d '{"secret":"Frabar01"}'
+
+curl -s -o /dev/null -w '%{http_code}\n' -u 'robot$pusher:Frabar01'   --cacert ./ca/harbor/ca.crt https://harbor.dev.local/v2/
+
+
 
 [20261105]
 

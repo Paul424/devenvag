@@ -68,7 +68,7 @@ elif [[ "${1:-}" == "push-to-harbor" ]]; then
 
     dest="docker://harbor.dev.local/$ref"
     echo "- $ref ==> $dest"
-    skopeo copy --all --dest-creds 'robot$pusher:frabar' --dest-cert-dir $BASE/ca/harbor "dir:$dir" "$dest"
+    skopeo copy --all --dest-creds 'robot$pusher:Frabar01' --dest-cert-dir $BASE/ca/harbor "dir:$dir" "$dest"
 
   done < <(find "$BASE/artifacts/transfer" -name manifest.json -print0 | sort -z)
 

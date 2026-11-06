@@ -25,21 +25,70 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              set -euxo pipefail
+              set -euxo
               HARBOR_URL=http://harbor-core.harbor.svc.cluster.local
-              api() { curl -s -o /dev/null -w '%{http_code}' -u "admin:$PASS" \
-                -H 'Content-Type: application/json' -X POST "$HARBOR_URL$1" -d "$2"; }
-              ok() { case "$1" in 201|409) echo "$2: ok ($1)";; *) echo "$2: failed ($1)"; exit 1;; esac; }
+              ROBOT=pusher
+              FULLNAME='robot$pusher'
+
+              # code-only (POST/PATCH)
+              call() { # method path body
+                curl -s -o /dev/null -w '%{http_code}' -u "admin:$PASS" \
+                  -H 'Content-Type: application/json' -X "$1" "$HARBOR_URL$2" -d "$3"
+              }
+              # body terug (GET)
+              get() { curl -sf -u "admin:$PASS" "$HARBOR_URL$1"; }
+              ok() { case "$1" in 200|201|409) echo "$2: ok ($1)";; *) echo "$2: failed ($1)"; exit 1;; esac; }
 
               for p in registry.k8s.io gcr.io quay.io ghcr.io docker.io; do
-                ok "$(api /api/v2.0/projects "{\"project_name\":\"$p\",\"public\":false}")" "project $p"
+                ok "$(call POST /api/v2.0/projects "{\"project_name\":\"$p\",\"public\":false}")" "project $p"
               done
 
-              ok "$(api /api/v2.0/robots "{
-                \"name\":\"pusher\",
-                \"level\":\"system\",
-                \"duration\":-1,
-                \"secret\":\"$ROBOT_SECRET\",
-                \"permissions\":[{\"kind\":\"project\",\"namespace\":\"*\",
-                  \"access\":[{\"resource\":\"repository\",\"action\":\"push\"},
-                              {\"resource\":\"repository\",\"action\":\"pull\"}]}]}")" "robot pusher"
+              # robot aanmaken zonder secret (409 = bestaat al)
+              ok "$(call POST /api/v2.0/robots '{
+                "name":"'"$ROBOT"'","level":"system","duration":-1,
+                "permissions":[{"kind":"project","namespace":"*",
+                  "access":[{"resource":"repository","action":"push"},
+                            {"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT"
+
+              ID=$(get "/api/v2.0/robots?page_size=100" \
+                | jq -r --arg n "$FULLNAME" '.[] | select(.name==$n) | .id' | head -1)
+              [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
+
+              # secret expliciet zetten; 200 is het enige geldige resultaat
+              BODY=$(jq -nc --arg s "$ROBOT_SECRET" '{secret:$s}')
+              code=$(call PATCH "/api/v2.0/robots/$ID" "$BODY")
+              [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
+              echo "secret set for robot id=$ID"
+
+
+
+  # set -euxo pipefail
+  # HARBOR_URL=http://harbor-core.harbor.svc.cluster.local
+  # ROBOT=pusher
+  # FULLNAME='robot$pusher'
+  # api() { curl -s -o /dev/null -w '%{http_code}' -u "admin:$PASS" \
+  #   -H 'Content-Type: application/json' -X POST "$HARBOR_URL$1" -d "$2"; }
+  # ok() { case "$1" in 200|201|409) echo "$2: ok ($1)";; *) echo "$2: failed ($1)"; exit 1;; esac; }
+
+  # for p in registry.k8s.io gcr.io quay.io ghcr.io docker.io; do
+  #   ok "$(api /api/v2.0/projects "{\"project_name\":\"$p\",\"public\":false}")" "project $p"
+  # done
+
+  # ok "$(api /api/v2.0/robots "{
+  #   \"name\":\"$ROBOT\",
+  #   \"level\":\"system\",
+  #   \"duration\":-1,
+  #   \"secret\":\"$ROBOT_SECRET\",
+  #   \"permissions\":[{\"kind\":\"project\",\"namespace\":\"*\",
+  #     \"access\":[{\"resource\":\"repository\",\"action\":\"push\"},
+  #                 {\"resource\":\"repository\",\"action\":\"pull\"}]}]}")" "robot $ROBOT"
+
+  # find_id() {
+  #   api "$HARBOR_URL/api/v2.0/robots?page_size=10" \
+  #     | jq -r --arg n "$FULLNAME" '.[] | select(.name==$n) | .id' | head -1
+  # }
+  # ID=$(find_id)
+
+  # ok "$(curl -s -o /dev/null -w '%{http_code}' -u "admin:$PASS" \
+  #   -H 'Content-Type: application/json' -X PATCH "$HARBOR_URL/api/v2.0/robots/$ID" -d "{\"secret\":\"$ROBOT_SECRET\"}"; }"
+  
