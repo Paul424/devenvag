@@ -55,9 +55,9 @@ spec:
     - name: platform01
   healthChecks:
     - apiVersion: helm.toolkit.fluxcd.io/v2
-       kind: HelmRelease
-       name: harbor
-       namespace: harbor
+      kind: HelmRelease
+      name: harbor
+      namespace: harbor
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
