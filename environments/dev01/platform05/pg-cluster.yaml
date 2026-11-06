@@ -14,5 +14,16 @@ spec:
         - CREATE EXTENSION IF NOT EXISTS pg_trgm
         - CREATE EXTENSION IF NOT EXISTS btree_gist
         - CREATE EXTENSION IF NOT EXISTS plpgsql
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: 256MB
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 1Gi
   storage:
     size: 20Gi
+    # storageClass: <jouw CSI-class>
