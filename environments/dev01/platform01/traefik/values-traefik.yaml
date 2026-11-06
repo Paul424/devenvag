@@ -1,3 +1,8 @@
+image:
+  registry: host.minikube.internal:5000
+  repository: docker.io/traefik
+  # tag: v3.7.17
+
 ingressRoute:
   dashboard:
     enabled: true
