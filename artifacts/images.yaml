@@ -3,6 +3,14 @@ docker.io:
   images:
     traefik: ["v3.7.17"]
     nicolaka/netshoot: ["v0.16"]
+    goharbor/harbor-core: ["v2.15.4"]
+    goharbor/harbor-jobservice: ["v2.15.4"]
+    goharbor/harbor-portal: ["v2.15.4"]
+    goharbor/registry-photon: ["v2.15.4"]
+    goharbor/harbor-registryctl: ["v2.15.4"]
+    goharbor/harbor-db: ["v2.15.4"]
+    goharbor/valkey-photon: ["v2.15.4"]
+    goharbor/trivy-adapter-photon: ["v2.15.4"]
 
 ghcr.io:
   images:

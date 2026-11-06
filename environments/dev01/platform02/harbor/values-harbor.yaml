@@ -28,6 +28,45 @@ existingSecretAdminPassword: "harbor-admin-password"
 existingSecretAdminPasswordKey: HARBOR_ADMIN_PASSWORD
 
 
+portal:
+  image:
+    repository: host.minikube.internal:5000/docker.io/goharbor/harbor-portal
+
+core:
+  image:
+    repository: host.minikube.internal:5000/docker.io/goharbor/harbor-core
+
+jobservice:
+  image:
+    repository: host.minikube.internal:5000/docker.io/goharbor/harbor-jobservice
+
+registry:
+  registry:
+    image:
+      repository: host.minikube.internal:5000/docker.io/goharbor/registry-photon
+  controller:
+    image:
+      repository: host.minikube.internal:5000/docker.io/goharbor/harbor-registryctl
+
+trivy:
+  image:
+    repository: host.minikube.internal:5000/docker.io/goharbor/trivy-adapter-photon
+
+database:
+  internal:
+    image:
+      repository: host.minikube.internal:5000/docker.io/goharbor/harbor-db
+
+redis:
+  internal:
+    image:
+      repository: host.minikube.internal:5000/docker.io/goharbor/valkey-photon
+
+exporter:
+  image:
+    repository: host.minikube.internal:5000/docker.io/goharbor/harbor-exporter
+
+
 
 # # The persistence is enabled by default and a default StorageClass
 # # is needed in the k8s cluster to provision volumes dynamically.
