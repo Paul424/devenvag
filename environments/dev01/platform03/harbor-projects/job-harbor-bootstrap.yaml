@@ -25,10 +25,10 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              set -eu
-              H=http://harbor-core.harbor.svc.cluster.local
+              set -euxo pipefail
+              HARBOR_URL=http://harbor-core.harbor.svc.cluster.local
               api() { curl -s -o /dev/null -w '%{http_code}' -u "admin:$PASS" \
-                -H 'Content-Type: application/json' -X POST "$H$1" -d "$2"; }
+                -H 'Content-Type: application/json' -X POST "$HARBOR_URL$1" -d "$2"; }
               ok() { case "$1" in 201|409) echo "$2: ok ($1)";; *) echo "$2: failed ($1)"; exit 1;; esac; }
 
               for p in registry.k8s.io gcr.io quay.io ghcr.io docker.io; do
@@ -36,7 +36,9 @@ spec:
               done
 
               ok "$(api /api/v2.0/robots "{
-                \"name\":\"pusher\",\"level\":\"system\",\"duration\":-1,
+                \"name\":\"pusher\",
+                \"level\":\"system\",
+                \"duration\":-1,
                 \"secret\":\"$ROBOT_SECRET\",
                 \"permissions\":[{\"kind\":\"project\",\"namespace\":\"*\",
                   \"access\":[{\"resource\":\"repository\",\"action\":\"push\"},

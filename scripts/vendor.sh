@@ -53,12 +53,9 @@ elif [[ "${1:-}" == "push-to-harbor" ]]; then
   # Push images and charts to Harbor
   #
 
-# curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/cluster-info \
-#   | jq -r '.data.kubeconfig' | grep -E 'server:|certificate-authority-data'
-curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/cluster-metadata \
-  | jq -r '.data["ca.crt"]' > ca.crt
-
-
+  # Trust...
+  curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/root-ca \
+    | jq -r '.data["ca.crt"]' > $BASE/ca/harbor/ca.crt
 
   while IFS= read -r -d '' manifest; do
     dir="$(dirname "$manifest")"
@@ -71,13 +68,7 @@ curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/clus
 
     dest="docker://harbor.dev.local/$ref"
     echo "- $ref ==> $dest"
-    skopeo copy --all --dest-creds 'robot$pusher:frabar' --dest-cert-dir ./ca/harbor/ca.crt "dir:$dir" "$dest"
-
-# CA-trust: zet de CA in /etc/docker/certs.d/harbor.dev.local/ (denk aan rootless Docker: ~/.config/docker/certs.d/), 
-# in de hosts.toml van containerd en in ~/.minikube/certs/.
-
-
-
+    skopeo copy --all --dest-creds 'robot$pusher:frabar' --dest-cert-dir $BASE/ca/harbor "dir:$dir" "$dest"
 
   done < <(find "$BASE/artifacts/transfer" -name manifest.json -print0 | sort -z)
 
