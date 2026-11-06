@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - ../../base/cert-manager
+- traefik
 - metallb.yaml
 - storageclass.yaml
 
