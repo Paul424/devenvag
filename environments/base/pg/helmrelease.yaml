@@ -1,0 +1,41 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cnpg
+spec:
+  targetNamespace: cnpg-system
+  releaseName: cnpg
+  interval: 5m
+  chart:
+    spec:
+      chart: cloudnative-pg
+      version: 0.29.1
+      sourceRef:
+        kind: HelmRepository
+        name: zot-charts
+        namespace: env
+  test:
+    enable: false
+  install:
+    createNamespace: false
+    timeout: 10m
+    remediation:
+      retries: 3
+  upgrade:
+    timeout: 10m
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+    cleanupOnFail: true
+  rollback:
+    timeout: 10m
+    cleanupOnFail: false
+  valuesFrom:
+    - kind: Secret
+      name: common-cnpg-secret
+    - kind: ConfigMap
+      name: common-cnpg
+    - kind: Secret
+      name: values-cnpg-secret
+    - kind: ConfigMap
+      name: values-cnpg

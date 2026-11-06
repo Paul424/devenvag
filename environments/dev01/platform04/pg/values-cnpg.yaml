@@ -1,0 +1,2 @@
+image:
+  repository: host.minikube.internal:5000/ghcr.io/cloudnative-pg/cloudnative-pg

@@ -53,7 +53,7 @@ elif [[ "${1:-}" == "push-to-harbor" ]]; then
   # Push images and charts to Harbor
   #
 
-  # Trust...
+  # Establish trust by refering to the root CA that Harbor is using (which is exposed to a public endpoint using trust-manager)
   curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/root-ca \
     | jq -r '.data["ca.crt"]' > $BASE/ca/harbor/ca.crt
 
@@ -72,5 +72,13 @@ elif [[ "${1:-}" == "push-to-harbor" ]]; then
 
   done < <(find "$BASE/artifacts/transfer" -name manifest.json -print0 | sort -z)
 
-fi
+  # patched image paths are not required since bootstrap layer can continue to use zot images
 
+  # Push charts to harbor
+  helm registry login harbor.dev.local -u 'robot$pusher' --password 'Frabar01' --ca-file $BASE/ca/harbor/ca.crt
+  for chart in "$BASE"/charts/*.tgz; do
+    [[ -f "$chart" ]] || continue
+    helm push "$chart" oci://harbor.dev.local/charts --ca-file $BASE/ca/harbor/ca.crt
+  done
+
+fi

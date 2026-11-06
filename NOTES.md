@@ -3,7 +3,10 @@
 [20261106]
 
 - Harbor ingress over traefik
-- 
+- Gitlab:
+        - externe pg
+        - minio
+        - redis
 
 Bereikbaarheid voor clients
 De hostnaam moet resolven vanaf je host (docker/skopeo), de minikube-node (containerd), en pods zoals GitLab-runners. De naam in externalURL moet overal hetzelfde IP geven. Gebruik daarvoor het MetalLB-IP van Traefik, met een CoreDNS hosts- of rewrite-regel in het cluster en /etc/hosts op de host en node.
@@ -11,13 +14,19 @@ CA-trust: zet de CA in /etc/docker/certs.d/harbor.dev.local/ (denk aan rootless 
 Poort: Harbor draait op 443, dus je laat :5000 weg in je image-referenties.
 
 curl -s -u "admin:admin" --cacert ./ca/harbor/ca.crt   'https://harbor.dev.local/api/v2.0/robots' | jq '.[]|select(.name=="robot$pusher")|.id'
-3
 ID=$(curl -s -u "admin:admin" --cacert ./ca/harbor/ca.crt   'https://harbor.dev.local/api/v2.0/robots' | jq '.[]|select(.name=="robot$pusher")|.id')
 curl -s -o /dev/null -w '%{http_code}\n' -u 'robot$pusher:Frabar01' --cacert ./ca/harbor/ca.crt https://harbor.dev.local/v2/
-
 curl -i -u "admin:admin" --cacert ./ca/harbor/ca.crt -H 'Content-Type: application/json' -X PATCH "https://harbor.dev.local/api/v2.0/robots/$ID" -d '{"secret":"Frabar01"}'
-
 curl -s -o /dev/null -w '%{http_code}\n' -u 'robot$pusher:Frabar01'   --cacert ./ca/harbor/ca.crt https://harbor.dev.local/v2/
+
+helm template harbor ./charts/harbor-1.19.4.tgz -f ./environments/base/harbor/common-harbor.yaml -f ./environments/base/harbor/secrets/common-harbor-secret.yaml -f ./environments/dev01/platform02/harbor/values-harbor.yaml -f ./environments/dev01/platform02/harbor/secrets/values-harbor-secret.yaml > ./logs/harbor
+
+helm template gitlab ./charts/gitlab-10.5.4.tgz -f ./environments/base/gitlab/common-gitlab.yaml -f ./environments/base/gitlab/secrets/common-gitlab-secret.yaml -f ./environments/dev01/platform04/gitlab/values-gitlab.yaml -f ./environments/dev01/platform04/gitlab/secrets/values-gitlab-secret.yaml > ./logs/gitlab
+
+gitlab.dev.local, minio.dev.local en kas.dev.local
+
+helm template cnpg ./charts/cloudnative-pg-0.29.1.tgz -f ./environments/base/pg/common-cnpg.yaml -f ./environments/base/pg/secrets/common-cnpg-secret.yaml -f ./environments/dev01/platform04/pg/values-cnpg.yaml -f ./environments/dev01/platform04/pg/secrets/values-cnpg-secret.yaml > ./logs/cnpg
+
 
 
 

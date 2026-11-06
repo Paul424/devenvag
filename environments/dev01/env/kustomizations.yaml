@@ -89,6 +89,28 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
+  name: platform04
+  namespace: env
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: devenvag
+  # sourceRef:
+  #   kind: OCIRepository
+  #   name: devenvag
+  path: ./environments/dev01/platform04/
+  prune: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
+  dependsOn:
+    - name: platform03
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
   name: platform09
   namespace: env
 spec:
@@ -106,4 +128,4 @@ spec:
     secretRef:
       name: sops-gpg
   dependsOn:
-    - name: platform03
+    - name: platform04

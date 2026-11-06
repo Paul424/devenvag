@@ -11,6 +11,7 @@ ghcr.io:
     fluxcd/kustomize-controller: ["v1.8.5"]
     fluxcd/notification-controller: ["v1.8.4"]
     fluxcd/source-controller: ["v1.8.5"]
+    cloudnative-pg/cloudnative-pg: ["1.30.1"]
 
 registry.k8s.io:
   images:
@@ -48,16 +49,3 @@ quay.io:
     jetstack/cert-manager-cainjector: ["v1.20.3"]
     jetstack/trust-pkg-debian-trixie: ["20250419-deb13u1.1"]
     jetstack/trust-manager: ["v0.26.0"]
-
-# quay.io/prometheus/prometheus:v3.11.3-distroless
-# quay.io/prometheus/node-exporter:v1.11.1-distroless
-# quay.io/prometheus/alertmanager:v0.32.1
-# quay.io/prometheus-operator/prometheus-operator:v0.90.1
-# quay.io/prometheus-operator/prometheus-config-reloader:v0.90.1
-# quay.io/kiwigrid/k8s-sidecar:2.7.1
-# ghcr.io/jkroepke/kube-webhook-certgen:1.8.2
-# ghcr.io/deefthefreeze/infra-visualizer:latest
-# docker.io/library/traefik:v3.7.16
-# docker.io/grafana/grafana:13.0.1
-# docker.io/bitnamilegacy/postgresql:17.6.0-debian-12-r0
-# docker.io/bitnamilegacy/keycloak:26.3.3-debian-12-r0

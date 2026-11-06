@@ -1,0 +1,35 @@
+global:
+  hosts:
+    domain: dev.local
+    https: true
+  edition: ce
+  ingress:
+    class: traefik
+    provider: traefik
+    configureCertmanager: false
+    tls:
+      secretName: gitlab-tls
+  initialRootPassword:
+    secret: gitlab-root-password
+    key: PASSWORD
+  certificates:
+    customCAs:
+      - secret: root-ca
+  # psql:
+  # redis:
+  # minio:
+  #   enabled: true
+
+installCertmanager: false
+nginx-ingress:
+  enabled: false
+# postgresql:
+#   install: true
+redis:
+  install: false
+registry:
+  enabled: false
+gitlab-runner: 
+  install: false
+prometheus:
+  install: false
