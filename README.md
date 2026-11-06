@@ -66,6 +66,8 @@ INFO[0292] Synced 13 images from 13 sources
 ```
 127.0.0.1 registry.dev.local
 127.0.0.1 host.minikube.internal
+192.168.49.100 traefik.dev.local
+
 ```
 
 ## Sops setup (one time only)

@@ -1,11 +1,14 @@
 # Notes
 
+[20261106]
+
+- Harbor ingress over traefik
+- 
+
 [20261105]
 
 - Add Traefik to 01
 - Configure Harbor (02) with vendpred images, ingress, etc...
-- 
-
 
 [20261104]
 
