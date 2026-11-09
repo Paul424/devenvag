@@ -3,12 +3,7 @@ kind: Kustomization
 
 resources:
 - redis.yaml
-
-configMapGenerator:
-- behavior: create
-  files:
-  - values.yaml=values-seaweedfs.yaml
-  name: values-seaweedfs
+- secrets
 
 transformers:
 - |-
