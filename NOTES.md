@@ -9,6 +9,20 @@ gitlab/gitlab-gitaly-0:
 Warning  FailedMount  4s (x8
  over 68s)  kubelet            MountVolume.SetUp failed for volume "custom-ca-certificates" : secret "root-ca" not found  
 
+image: registry.gitlab.com/gitlab-org/build/cng/certificates:v19.5.3    
+image: "registry.gitlab.com/gitlab-org/build/cng/gitlab-base:v19.5.3"                    
+image: "registry.gitlab.com/gitlab-org/build/cng/gitlab-exporter:17.0.2"                    
+image: "registry.gitlab.com/gitlab-org/build/cng/gitlab-shell:v14.58.0"                    
+image: "registry.gitlab.com/gitlab-org/build/cng/gitlab-kas:v19.5.3"                    
+image: "registry.gitlab.com/gitlab-org/build/cng/gitlab-sidekiq-ce:v19.5.3"                    
+image: "registry.gitlab.com/gitlab-org/build/cng/gitlab-workhorse-ce:v19.5.3"          
+image: "registry.gitlab.com/gitlab-org/build/cng/gitaly:v19.5.3"                    
+image: registry.gitlab.com/gitlab-org/build/cng/kubectl:v19.5.3
+image: "registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ce:v19.5.3"
+image: registry.gitlab.com/gitlab-org/build/cng/gitlab-webservice-ce:v19.5.3
+        
+
+
 [20261106]
 
 - Harbor ingress over traefik

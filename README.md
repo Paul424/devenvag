@@ -51,6 +51,13 @@ x
 11. [skopeo](https://github.com/podman-container-tools/skopeo/blob/main/install.md)
 12. [zot registry](https://zotregistry.dev/v2.1.23/install-guides/install-guide-linux/#before-you-begin)
 
+## fs.inotify limits
+
+```
+sudo sysctl -w fs.inotify.max_user_watches=524288
+sudo sysctl -w fs.inotify.max_user_instances=8192
+```
+
 ## Pull images
 
 Artifacts need to be vendored to a local repository. This step only pulls the artifacts and is done seperately since it requires an internet connection.

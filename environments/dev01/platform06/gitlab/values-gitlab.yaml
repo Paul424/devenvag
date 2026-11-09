@@ -1,4 +1,21 @@
+    # gitlab-org/build/cng/certificates: ["v19.5.3"]
+    # gitlab-org/build/cng/gitlab-base: ["v19.5.3"]
+    # gitlab-org/build/cng/gitlab-exporter: ["17.0.2"]
+    # gitlab-org/build/cng/gitlab-shell: ["v14.58.0"]
+    # gitlab-org/build/cng/gitlab-kas: ["v19.5.3"]
+    # gitlab-org/build/cng/gitlab-sidekiq-ce: ["v19.5.3"]
+    # gitlab-org/build/cng/gitlab-workhorse-ce: ["v19.5.3"]
+    # gitlab-org/build/cng/gitaly: ["v19.5.3"]
+    # gitlab-org/build/cng/kubectl: ["v19.5.3"]
+    # gitlab-org/build/cng/gitlab-toolbox-ce: ["v19.5.3"]
+    # gitlab-org/build/cng/gitlab-webservice-ce: ["v19.5.3"]
+
+
+
+
 global:
+  image:
+    registry: host.minikube.internal:5000/gitlab-org/
   hosts:
     domain: dev.local
     https: true
@@ -55,6 +72,19 @@ global:
       secret: gitlab-redis-password
       key: password
 
+  gatewayApi:
+    installEnvoy: false
+
+  certificates:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/certificates
+  kubectl:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/kubectl
+  gitlabBase:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/gitlab-base
+
 upgradeCheck:
   enabled: false
 
@@ -74,3 +104,36 @@ registry:
 
 gitlab-runner: 
   install: false
+
+gitlab:
+  gitlab-exporter:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/gitlab-exporter
+
+  gitlab-shell:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/gitlab-shell
+
+  kas:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/gitlab-kas
+
+  sidekiq:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/gitlab-sidekiq-ce
+
+  toolbox:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ce
+
+  webservice:
+    workhorse:
+      image: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/gitlab-workhorse-ce
+
+  gitaly:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/gitaly
+
+  migrations:
+    image:
+      repository: host.minikube.internal:5000/registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ce
