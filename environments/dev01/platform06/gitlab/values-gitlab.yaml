@@ -20,12 +20,15 @@ global:
     domain: dev.local
     https: true
   edition: ce
+  
   ingress:
+    enabled: true
     class: traefik
     provider: traefik
     configureCertmanager: false
     tls:
       secretName: gitlab-tls
+
   initialRootPassword:
     secret: gitlab-root-password
     key: PASSWORD

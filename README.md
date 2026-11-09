@@ -75,6 +75,7 @@ INFO[0292] Synced 13 images from 13 sources
 127.0.0.1 host.minikube.internal
 192.168.49.100 traefik.dev.local
 192.168.49.100 harbor.dev.local
+192.168.49.100 gitlab.dev.local
 
 ```
 
