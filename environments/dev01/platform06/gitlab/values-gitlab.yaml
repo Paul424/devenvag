@@ -15,7 +15,16 @@ global:
   certificates:
     customCAs:
       - secret: root-ca
-  # psql:
+  psql:
+    host: gitlab-pg-rw.gitlab.svc.cluster.local
+    port: 5432
+    database: gitlab
+    username: gitlab
+    password:
+      useSecret: true
+      secret: gitlab-pg-app
+      key: password
+
   # redis:
   # minio:
   #   enabled: true
@@ -33,3 +42,8 @@ gitlab-runner:
   install: false
 prometheus:
   install: false
+
+
+
+
+global.psql.host

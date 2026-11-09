@@ -10,16 +10,6 @@ master:
   data:
     type: persistentVolumeClaim
     size: 1Gi
-  ingress:
-    enabled: true
-    host: master.seaweedfs.dev.local
-    className: traefik
-    path: "/sw-master/?(.*)"
-    pathType: ImplementationSpecific
-    tls:
-      - hosts:
-        - master.seaweedfs.dev.local
-        secretName: seaweedfs-tls
 
 volume:
   replicas: 1
@@ -40,3 +30,13 @@ s3:
   replicas: 1
   createBuckets:
     - name: gitlab-x
+
+admin:
+  ingress:
+    enabled: true
+    className: traefik
+    host: "admin.seaweedfs.dev.local"
+    tls:
+      - hosts:
+        - admin.seaweedfs.dev.local
+        secretName: seaweedfs-tls
