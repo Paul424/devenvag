@@ -13,6 +13,7 @@ master:
   ingress:
     enabled: true
     host: master.seaweedfs.dev.local
+    className: traefik
     path: "/sw-master/?(.*)"
     pathType: ImplementationSpecific
     tls:
