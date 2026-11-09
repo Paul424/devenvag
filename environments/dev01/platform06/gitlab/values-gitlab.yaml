@@ -44,9 +44,14 @@ global:
     packages:
       enabled: true
       bucket: gitlab-packages
-  # redis:
-  # minio:
-  #   enabled: true
+
+  redis:
+    host: gitlab-redis.gitlab.svc.cluster.local
+    port: 6379
+    password:
+      useSecret: true
+      secret: gitlab-redis-password
+      key: password
 
 installCertmanager: false
 nginx-ingress:
@@ -61,9 +66,3 @@ gitlab-runner:
   install: false
 prometheus:
   install: false
-
-
-
-
-# global.psql.host
-#  artifacts,lfs,uploads,packages 

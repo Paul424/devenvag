@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
 - pg  # operator
 - seaweedfs
+- redis
