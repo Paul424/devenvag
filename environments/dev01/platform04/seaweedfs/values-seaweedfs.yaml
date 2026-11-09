@@ -29,7 +29,10 @@ s3:
   enabled: true
   replicas: 1
   createBuckets:
-    - name: gitlab-x
+    - name: gitlab-artifacts
+    - name: gitlab-lfs
+    - name: gitlab-uploads
+    - name: gitlab-packages
 
 admin:
   ingress:

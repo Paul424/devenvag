@@ -25,6 +25,25 @@ global:
       secret: gitlab-pg-app
       key: password
 
+  appConfig:
+    object_store:
+      enabled: true
+      proxy_download: true
+      connection:
+        secret: gitlab-objectstore-connection
+        key: connection
+    artifacts:
+      enabled: true
+      bucket: gitlab-artifacts
+    lfs:
+      enabled: true
+      bucket: gitlab-lfs
+    uploads:
+      enabled: true
+      bucket: gitlab-uploads
+    packages:
+      enabled: true
+      bucket: gitlab-packages
   # redis:
   # minio:
   #   enabled: true
@@ -46,4 +65,5 @@ prometheus:
 
 
 
-global.psql.host
+# global.psql.host
+#  artifacts,lfs,uploads,packages 
