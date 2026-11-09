@@ -14,7 +14,9 @@ global:
     key: PASSWORD
   certificates:
     customCAs:
-      - secret: root-ca
+      - configMap: root-ca
+        keys:
+          - ca.crt
   psql:
     host: gitlab-pg-rw.gitlab.svc.cluster.local
     port: 5432

@@ -15,5 +15,5 @@ transformers:
   unsetOnly: true
 
 images:
-  - name: docker.io/library/redis:7.2.17
-    newName: host.minikube.internal:5000/docker.io/library/redis:7.2.17
+  - name: docker.io/library/redis
+    newName: host.minikube.internal:5000/docker.io/library/redis

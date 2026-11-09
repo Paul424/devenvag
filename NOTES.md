@@ -1,5 +1,14 @@
 # Notes
 
+[20261109]
+
+docker.io/envoyproxy/envoy:distroless-v1.39.6
+
+gitlab/gitlab-gitaly-0:
+
+Warning  FailedMount  4s (x8
+ over 68s)  kubelet            MountVolume.SetUp failed for volume "custom-ca-certificates" : secret "root-ca" not found  
+
 [20261106]
 
 - Harbor ingress over traefik
@@ -27,7 +36,7 @@ gitlab.dev.local, minio.dev.local en kas.dev.local
 
 helm template cnpg ./charts/cloudnative-pg-0.29.1.tgz -f ./environments/base/pg/common-cnpg.yaml -f ./environments/base/pg/secrets/common-cnpg-secret.yaml -f ./environments/dev01/platform04/pg/values-cnpg.yaml -f ./environments/dev01/platform04/pg/secrets/values-cnpg-secret.yaml > ./logs/cnpg
 
-
+skopeo list-tags docker://ghcr.io/cloudnative-pg/postgresql | jq -r '.Tags[]' | grep -E '^17\.' | sort -V | tail -20
 
 
 [20261105]
