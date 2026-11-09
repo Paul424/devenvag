@@ -55,16 +55,22 @@ global:
       secret: gitlab-redis-password
       key: password
 
-installCertmanager: false
-nginx-ingress:
+upgradeCheck:
   enabled: false
-# postgresql:
-#   install: true
-redis:
+
+installCertmanager: false
+certmanager:
+  installCRDs: false
+  config:
+    enableGatewayAPI: false
+
+prometheus:
   install: false
+  rbac:
+    create: false
+
 registry:
   enabled: false
+
 gitlab-runner: 
-  install: false
-prometheus:
   install: false
