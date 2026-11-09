@@ -1,3 +1,5 @@
+# Request a postgresql db for gitlab
+# Creds become available by the operator in a secret: gitlab-pg-app
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:

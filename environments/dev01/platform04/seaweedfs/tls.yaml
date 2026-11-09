@@ -1,0 +1,15 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: seaweedfs-tls
+  namespace: seaweedfs
+spec:
+  secretName: seaweedfs-tls
+  duration: 2160h # 90d
+  renewBefore: 720h # 30d
+  dnsNames:
+  - master.seaweedfs.dev.local
+  issuerRef:
+    kind: ClusterIssuer
+    name: root-ca

@@ -79,7 +79,7 @@ To setup (once) see [sops setup guide](./docs/SOPS.md)
 
 Bootstrap the registry (zot) and the minikube cluster
 ```
-bash ./scripts/bootstrap.sh 
+bash ./scripts/bootstrap.sh
 ```
 
 ## Add trust for Harbor

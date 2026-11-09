@@ -1,0 +1,41 @@
+global:
+  imageRegistry: "host.minikube.internal:5000/docker.io"
+
+  seaweedfs:
+    enableReplication: false
+    replicationPlacement: "001"
+
+master:
+  replicas: 1
+  data:
+    type: persistentVolumeClaim
+    size: 1Gi
+  ingress:
+    enabled: true
+    host: master.seaweedfs.dev.local
+    path: "/sw-master/?(.*)"
+    pathType: ImplementationSpecific
+    tls:
+      - hosts:
+        - master.seaweedfs.dev.local
+        secretName: seaweedfs-tls
+
+volume:
+  replicas: 1
+  dataDirs:
+    - name: data
+      type: persistentVolumeClaim
+      size: 50Gi
+      maxVolumes: 0
+
+filer:
+  replicas: 1
+  data:
+    type: persistentVolumeClaim
+    size: 10Gi
+
+s3:
+  enabled: true
+  replicas: 1
+  createBuckets:
+    - name: gitlab-x

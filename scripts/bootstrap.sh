@@ -4,7 +4,6 @@ set -euxo pipefail
 BASE=$(dirname $(dirname $(realpath $0)))
 SOPS_KEY_NAME="dev.local"
 
-
 ##############################################################################
 # Run a local zot registry for the bootstrap images
 #
@@ -73,5 +72,5 @@ kubectl create secret generic private-git -n env \
     --from-literal=password=$REGISTRY_UPSTREAM_PAT \
     --dry-run=client -o yaml | kubectl apply -f -
 
-# The top level reconciler(s)
+# The top level kustomizations (platform01, 02, etc...)
 kubectl apply -k $BASE/environments/dev01/env
