@@ -18,6 +18,17 @@ curl -sS -H 'PRIVATE-TOKEN: glpat-JbPKIkAIssgqN5EitvFNNOvui8' -H 'Content-Type: 
 
 env                   platform04            False            Secret/gitlab/gitlab-redis-password not found: namespaces "gitlab" not foundNamespace/cnpg-system createdNamespace/seaweedfs created  
 
+                                                                                                                                                                                                                             │
+│ 2026-11-10T11:53:17.699345977Z: applying CustomResourceDefinition(s) with policy Create: {}                                                                                                                                       │
+│   Warning  InstallFailed  5m36s  helm-controller  Helm install failed for release gitlab/gitlab with chart gitlab@10.5.4: unable to build kubernetes objects from release manifest: [resource mapping not found for name: "gitlab │
+│ -gw" namespace: "gitlab" from "": no matches for kind "Gateway" in version "gateway.networking.k8s.io/v1"                                                                                                                         │
+│ ensure CRDs are installed first, resource mapping not found for name: "gitlab-kas-k8s-proxy" namespace: "gitlab" from "": no matches for kind "HTTPRoute" in version "gateway.networking.k8s.io/v1"                               │
+│ ensure CRDs are installed first, resource mapping not found for name: "gitlab-kas" namespace: "gitlab" from "": no matches for kind "HTTPRoute" in version "gateway.networking.k8s.io/v1"                                         │
+│ ensure CRDs are installed first, resource mapping not found for name: "gitlab-gitlab" namespace: "gitlab" from "": no matches for kind "HTTPRoute" in version "gateway.networking.k8s.io/v1"                                      │
+│ ensure CRDs are installed first, resource mapping not found for name: "gitlab-http-redirect" namespace: "gitlab" from "": no matches for kind "HTTPRoute" in version "gateway.networking.k8s.io/v1"                               │
+│ ensure CRDs are installed first, resource mapping not found for name: "gitlab-gitlab-shell" namespace: "gitlab" from "": no matches for kind "TCPRoute" in version "gateway.networking.k8s.io/v1"                                 │
+│ ensure CRDs are installed first]       
+
 
 [20261109]
 
