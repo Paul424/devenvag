@@ -57,7 +57,7 @@ spec:
                   "access":[{"resource":"repository","action":"push"},
                             {"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PUSHER"
 
-              ID=$(get "/api/v2.0/robots?q=name%3Drobot%24pusher&page_size=100" \
+              ID=$(get "/api/v2.0/robots?q=name=pusher&page_size=100" \
                 | jq -r --arg n "$FULLNAME_PUSHER" '.[] | select(.name==$n) | .id' | head -1)
               [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
 
@@ -73,7 +73,7 @@ spec:
                 "permissions":[{"kind":"project","namespace":"*",
                   "access":[{"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PULLER"
 
-              ID=$(get "/api/v2.0/robots?q=name%3Drobot%24puller&page_size=100" \
+              ID=$(get "/api/v2.0/robots?q=name=puller&page_size=100" \
                 | jq -r --arg n "$FULLNAME_PULLER" '.[] | select(.name==$n) | .id' | head -1)
               [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
 

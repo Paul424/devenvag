@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
 - secrets
 - job-harbor-bootstrap.yaml
+- netshoot.yaml
 
 images:
   - name: nicolaka/netshoot

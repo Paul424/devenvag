@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netshoot
+  namespace: harbor
+spec:
+  selector:
+    matchLabels:
+      app: netshoot
+  replicas: 0
+  template:
+    metadata:
+      labels:
+        app: netshoot
+    spec:
+      # hostNetwork: true
+      containers:
+      - name: netshoot
+        image: nicolaka/netshoot:v0.16
+        imagePullPolicy: IfNotPresent
+        command:
+        - sleep
+        - "3600"
+        securityContext:
+          # Needs NET_ADMIN/NET_RAW capabilities
+          privileged: true
+      # nodeSelector:
+      #   kubernetes.io/os: linux
+      tolerations:
+       - effect: NoSchedule
+         key: node-role.kubernetes.io/master
+         operator: Exists
+       - effect: NoSchedule
+         key: node-role.kubernetes.io/control-plane
+         operator: Exists
