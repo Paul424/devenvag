@@ -21,10 +21,15 @@ spec:
               mountPath: /ca
               readOnly: true
           env:
-            - name: FLUX_PASSWORD
+            - name: FLUXR_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: gitlab-flux-user-secret
+                  key: PASSWORD
+            - name: PUSHR_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gitlab-pushr-user-secret
                   key: PASSWORD
           command:
             - /bin/sh
@@ -35,11 +40,13 @@ spec:
               G=http://gitlab-webservice-default.gitlab.svc.cluster.local:8181
               GROUP=platform
               REPO=devenvag
-              FLUXUSER=fluxr
-              SECRET=gitlab-fluxr-auth
+              FLUXRUSER=fluxr
+              FLUXRSECRET=gitlab-fluxr-auth
+              PUSHRUSER=pushr
+              PUSHRSECRET=gitlab-pushr-auth
 
-              if kubectl -n env get secret "$SECRET" >/dev/null 2>&1; then
-                echo "secret $SECRET exists, skip"; exit 0
+              if kubectl -n env get secret "$PUSHERSECRET" >/dev/null 2>&1; then
+                echo "secret $PUSHERSECRET exists, skip"; exit 0
               fi
 
               kubectl -n gitlab wait --for=condition=available deploy/gitlab-toolbox --timeout=3m
@@ -69,10 +76,10 @@ spec:
                   -d "{\"name\":\"$REPO\",\"path\":\"$REPO\",\"namespace_id\":$GID,\"visibility\":\"private\",\"initialize_with_readme\":true}" >/dev/null
               fi
 
-              # 4. local user
-              UID_=$(api "$G/api/v4/users?username=$FLUXUSER" | jq -r '.[0].id // empty')
+              # 4. local user fluxr
+              UID_=$(api "$G/api/v4/users?username=$FLUXRUSER" | jq -r '.[0].id // empty')
               if [ -z "$UID_" ]; then
-                UID_=$(api -X POST "$G/api/v4/users" -d "$(jq -nc --arg p "$FLUX_PASSWORD" \
+                UID_=$(api -X POST "$G/api/v4/users" -d "$(jq -nc --arg p "$FLUXR_PASSWORD" \
                   '{name:"Flux",username:"fluxr",email:"fluxr@dev.local",password:$p,skip_confirmation:true,can_create_group:false}')" | jq -r .id)
               fi
               [ -n "$UID_" ] && [ "$UID_" != null ] || { echo "Failed to create user"; exit 1; }
@@ -87,10 +94,34 @@ spec:
               [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "Failed to create PAT"; exit 1; }
 
               # 7. secret voor Flux (basic auth + CA)
-              kubectl -n env create secret generic "$SECRET" \
-                --from-literal=username="$FLUXUSER" --from-literal=password="$TOKEN" \
+              kubectl -n env create secret generic "$FLUXRSECRET" \
+                --from-literal=username="$FLUXRUSER" --from-literal=password="$TOKEN" \
                 --from-file=ca.crt=/ca/ca.crt
 
-              # 8. bootstrap-token intrekken
+              # 8. local user pushr
+              UID_=$(api "$G/api/v4/users?username=$PUSHRUSER" | jq -r '.[0].id // empty')
+              if [ -z "$UID_" ]; then
+                UID_=$(api -X POST "$G/api/v4/users" -d "$(jq -nc --arg p "$PUSHR_PASSWORD" \
+                  '{name:"Push",username:"pushr",email:"pushr@dev.local",password:$p,skip_confirmation:true,can_create_group:false}')" | jq -r .id)
+              fi
+              [ -n "$UID_" ] && [ "$UID_" != null ] || { echo "Failed to create user"; exit 1; }
+
+              # 9. rechten: 30 = Developer (nodig voor pushen)
+              api -X POST "$G/api/v4/groups/$GID/members" -d "{\"user_id\":$UID_,\"access_level\":30}" >/dev/null || true
+
+              # 10. PAT aanmaken (maximaal 365 dagen geldig)
+              EXP=$(date -u -d "@$(( $(date +%s) + 364*86400 ))" +%F)
+              TOKEN=$(api -X POST "$G/api/v4/users/$UID_/personal_access_tokens" \
+                -d "{\"name\":\"pushr\",\"scopes\":[\"read_repository\",\"write_repository\"],\"expires_at\":\"$EXP\"}" | jq -r .token)
+              [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "Failed to create PAT"; exit 1; }
+
+              # 11. secret voor Flux (basic auth + CA)
+              kubectl -n env create secret generic "$PUSHRSECRET" \
+                --from-literal=username="$PUSHRUSER" --from-literal=password="$TOKEN" \
+                --from-file=ca.crt=/ca/ca.crt
+
+              # 12. bootstrap-token intrekken
               api -X DELETE "$G/api/v4/personal_access_tokens/self" -o /dev/null
-              echo "ready: $GROUP/$REPO, user $FLUXUSER, expiry $EXP"
+              
+              # 13. summary
+              echo "ready: $GROUP/$REPO, users $FLUXRUSER $PUSHRUSER, expiry $EXP"

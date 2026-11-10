@@ -82,12 +82,16 @@ Bootstrap the registry (zot) and the minikube cluster
 bash ./scripts/bootstrap.sh
 ```
 
-## Add trust for Harbor
-
-Extract the CA and add to truststore
-
 ## Push to harbor
 
+Push artifacts (images and charts) into Harbor
 ```
 bash ./scripts/vendor.sh push-to-harbor
+```
+
+## Push to gitlab
+
+Push the platform repo into gitlab, which kicks off any kustomization on top of bootstrap layer
+```
+bash ./scripts/git.sh push-to-harbor
 ```

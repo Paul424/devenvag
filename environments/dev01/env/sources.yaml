@@ -34,7 +34,7 @@ metadata:
   namespace: env
 spec:
   interval: 1m
-  url: https://gitlab-webservice-default.gitlab.svc.cluster.local/platform/devenvag.git
+  url: http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/platform/devenvag.git
   ref:
     branch: main
   secretRef:

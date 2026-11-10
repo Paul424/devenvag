@@ -5,7 +5,7 @@ BASE=$(dirname $(dirname $(realpath $0)))
 SOPS_KEY_NAME="dev.local"
 
 ##############################################################################
-# Run a local zot registry for the bootstrap images
+# Run a local zot registry for the bootstrap images and vendor images and charts
 #
 
 # Load the zot image into the docker daemon
@@ -34,8 +34,10 @@ done
 bash $BASE/scripts/vendor.sh push-to-zot
 
 ##############################################################################
-# Bootstrap cluster
-# 
+# Bootstrap (minikube) cluster
+# - creates the control-plane/w cni / csi
+# - deploy flux /w trust for zot
+# - creates the bootstrap kustomizations /w sources
 
 bash $BASE/providers/minikube/run.sh
 
