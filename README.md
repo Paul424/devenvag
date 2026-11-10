@@ -68,7 +68,6 @@ INFO[0292] Synced 13 images from 13 sources
 192.168.49.100 traefik.dev.local
 192.168.49.100 harbor.dev.local
 192.168.49.100 gitlab.dev.local
-
 ```
 
 ## Sops setup (one time only)
@@ -93,5 +92,5 @@ bash ./scripts/vendor.sh push-to-harbor
 
 Push the platform repo into gitlab, which kicks off any kustomization on top of bootstrap layer
 ```
-bash ./scripts/git.sh push-to-harbor
+bash ./scripts/git.sh push-to-gitlab
 ```

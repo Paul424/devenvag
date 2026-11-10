@@ -45,8 +45,8 @@ spec:
               PUSHRUSER=pushr
               PUSHRSECRET=gitlab-pushr-auth
 
-              if kubectl -n env get secret "$PUSHERSECRET" >/dev/null 2>&1; then
-                echo "secret $PUSHERSECRET exists, skip"; exit 0
+              if kubectl -n env get secret "$PUSHRSECRET" >/dev/null 2>&1; then
+                echo "secret $PUSHRSECRET exists, skip"; exit 0
               fi
 
               kubectl -n gitlab wait --for=condition=available deploy/gitlab-toolbox --timeout=3m
@@ -73,7 +73,7 @@ spec:
               # 3. repo
               if [ "$(status "$G/api/v4/projects/$GROUP%2F$REPO")" != 200 ]; then
                 api -X POST "$G/api/v4/projects" \
-                  -d "{\"name\":\"$REPO\",\"path\":\"$REPO\",\"namespace_id\":$GID,\"visibility\":\"private\",\"initialize_with_readme\":true}" >/dev/null
+                  -d "{\"name\":\"$REPO\",\"path\":\"$REPO\",\"namespace_id\":$GID,\"visibility\":\"private\",\"initialize_with_readme\":false}" >/dev/null
               fi
 
               # 4. local user fluxr
@@ -96,7 +96,8 @@ spec:
               # 7. secret voor Flux (basic auth + CA)
               kubectl -n env create secret generic "$FLUXRSECRET" \
                 --from-literal=username="$FLUXRUSER" --from-literal=password="$TOKEN" \
-                --from-file=ca.crt=/ca/ca.crt
+                --from-file=ca.crt=/ca/ca.crt \
+                --dry-run=client -o yaml | kubectl apply -f -
 
               # 8. local user pushr
               UID_=$(api "$G/api/v4/users?username=$PUSHRUSER" | jq -r '.[0].id // empty')
@@ -118,7 +119,8 @@ spec:
               # 11. secret voor Flux (basic auth + CA)
               kubectl -n env create secret generic "$PUSHRSECRET" \
                 --from-literal=username="$PUSHRUSER" --from-literal=password="$TOKEN" \
-                --from-file=ca.crt=/ca/ca.crt
+                --from-file=ca.crt=/ca/ca.crt \
+                --dry-run=client -o yaml | kubectl apply -f -
 
               # 12. bootstrap-token intrekken
               api -X DELETE "$G/api/v4/personal_access_tokens/self" -o /dev/null
