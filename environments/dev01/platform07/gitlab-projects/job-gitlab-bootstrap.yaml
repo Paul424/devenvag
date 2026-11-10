@@ -38,7 +38,7 @@ spec:
               FLUXUSER=fluxr
               SECRET=gitlab-fluxr-auth
 
-              if kubectl -n flux-system get secret "$SECRET" >/dev/null 2>&1; then
+              if kubectl -n env get secret "$SECRET" >/dev/null 2>&1; then
                 echo "secret $SECRET exists, skip"; exit 0
               fi
 
