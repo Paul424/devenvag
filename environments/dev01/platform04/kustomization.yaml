@@ -5,3 +5,4 @@ resources:
 - pg  # operator
 - seaweedfs
 - redis
+- namespace.yaml

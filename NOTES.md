@@ -13,8 +13,10 @@ curl -sS -H 'PRIVATE-TOKEN: glpat-JbPKIkAIssgqN5EitvFNNOvui8' -H 'Content-Type: 
  gitlab-bootstrap-hc52p + EXP=2027-11-09                                                                                                                                                                                           │
 │ gitlab-bootstrap-hc52p + api -X POST http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/api/v4/users/3/personal_access_tokens -d '{"name":"fluxr","scopes":["read_repository"],"expires_at":"2027-11-09"}'            │
 │ gitlab-bootstrap-hc52p + curl -sS -H 'PRIVATE-TOKEN: glpat-fnqkHY6zBiBq4UrzYEgRUNsPAG' -H 'Content-Type: application/json' -X POST http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/api/v4/users/3/personal_access_ │
-│ tokens -d '{"name":"fluxr","scopes":["read_repository"],"expires_at":"2027-11-09"}'                                                                                                                                               │
+│ tokens -d '{"name":"fluxr","scopes":["read_repository"],"expires_at":"2027-11-09"}
 │ gitlab-bootstrap-hc52p + jq -r .token
+
+env                   platform04            False            Secret/gitlab/gitlab-redis-password not found: namespaces "gitlab" not foundNamespace/cnpg-system createdNamespace/seaweedfs created  
 
 
 [20261109]
