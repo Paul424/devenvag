@@ -13,6 +13,7 @@ docker.io:
     goharbor/trivy-adapter-photon: ["v2.15.4"]
     chrislusf/seaweedfs: ["4.53"]
     redis: ["7.2.17"]
+    alpine/k8s: ["1.34.1"]
 
 registry.gitlab.com:
   images:

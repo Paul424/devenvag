@@ -15,8 +15,7 @@ spec:
             name: root-ca
       containers:
         - name: bootstrap
-          image: nicolaka/netshoot:v0.16
-          # image: harbor.dev.local/docker.io/alpine/k8s:1.34.1
+          image: docker.io/alpine/k8s:1.34.1
           volumeMounts:
             - name: ca
               mountPath: /ca
