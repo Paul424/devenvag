@@ -73,7 +73,7 @@ spec:
               UID_=$(api "$G/api/v4/users?username=$FLUXUSER" | jq -r '.[0].id // empty')
               if [ -z "$UID_" ]; then
                 UID_=$(api -X POST "$G/api/v4/users" -d "$(jq -nc --arg p "$FLUX_PASSWORD" \
-                  '{name:"Flux",username:"flux",email:"flux@dev.local",password:$p,skip_confirmation:true,can_create_group:false}')" | jq -r .id)
+                  '{name:"Flux",username:"fluxr",email:"fluxr@dev.local",password:$p,skip_confirmation:true,can_create_group:false}')" | jq -r .id)
               fi
               [ -n "$UID_" ] && [ "$UID_" != null ] || { echo "Failed to create user"; exit 1; }
 
@@ -83,7 +83,7 @@ spec:
               # 6. PAT aanmaken (maximaal 365 dagen geldig)
               EXP=$(date -u -d "@$(( $(date +%s) + 364*86400 ))" +%F)
               TOKEN=$(api -X POST "$G/api/v4/users/$UID_/personal_access_tokens" \
-                -d "{\"name\":\"flux\",\"scopes\":[\"read_repository\"],\"expires_at\":\"$EXP\"}" | jq -r .token)
+                -d "{\"name\":\"fluxr\",\"scopes\":[\"read_repository\"],\"expires_at\":\"$EXP\"}" | jq -r .token)
               [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "Failed to create PAT"; exit 1; }
 
               # 7. secret voor Flux (basic auth + CA)
