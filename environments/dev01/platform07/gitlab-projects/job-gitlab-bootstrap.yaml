@@ -87,7 +87,7 @@ spec:
               [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "Failed to create PAT"; exit 1; }
 
               # 7. secret voor Flux (basic auth + CA)
-              kubectl -n flux-system create secret generic "$SECRET" \
+              kubectl -n env create secret generic "$SECRET" \
                 --from-literal=username="$FLUXUSER" --from-literal=password="$TOKEN" \
                 --from-file=ca.crt=/ca/ca.crt
 
