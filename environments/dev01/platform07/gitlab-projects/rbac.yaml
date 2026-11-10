@@ -45,7 +45,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: gitlab-bootstrap-secrets
-  namespace: flux-system
+  namespace: flux
 rules:
   - apiGroups:
       - ""
@@ -60,7 +60,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: gitlab-bootstrap-secrets
-  namespace: flux-system
+  namespace: flux
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
