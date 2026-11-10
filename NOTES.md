@@ -21,6 +21,13 @@ image: registry.gitlab.com/gitlab-org/build/cng/kubectl:v19.5.3
 image: "registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ce:v19.5.3"
 image: registry.gitlab.com/gitlab-org/build/cng/gitlab-webservice-ce:v19.5.3
         
+- gitlab aanmaken repo devenvag
+- aanmaken local account met een PAT
+  met deze PAT kan ik namelijk de kustomizations inschakelen NA de bootstrap
+- hieronder kan dan vallen mattermost en keycloak bijvoorbeeld
+- gitlab runners
+- gitlab shell
+- en wat is kas?
 
 
 [20261106]

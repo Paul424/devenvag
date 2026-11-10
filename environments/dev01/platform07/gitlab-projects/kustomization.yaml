@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- secrets
+- job-gitlab-bootstrap.yaml
+- sa.yaml
+- rbac.yaml
+
+images:
+  - name: nicolaka/netshoot
+    newName: host.minikube.internal:5000/docker.io/nicolaka/netshoot
+
+transformers:
+- |-
+  apiVersion: builtin
+  kind: NamespaceTransformer
+  metadata:
+    name: not-relevant-here
+    namespace: gitlab
+  unsetOnly: true

@@ -8,7 +8,7 @@ spec:
   interval: 1m
   sourceRef:
     kind: GitRepository
-    name: devenvag
+    name: devenvag-bootstrap
   # sourceRef:
   #   kind: OCIRepository
   #   name: devenvag
@@ -45,7 +45,7 @@ spec:
   interval: 1m
   sourceRef:
     kind: GitRepository
-    name: devenvag
+    name: devenvag-bootstrap
   # sourceRef:
   #   kind: OCIRepository
   #   name: devenvag
@@ -72,7 +72,7 @@ spec:
   interval: 1m
   sourceRef:
     kind: GitRepository
-    name: devenvag
+    name: devenvag-bootstrap
   # sourceRef:
   #   kind: OCIRepository
   #   name: devenvag
@@ -99,7 +99,7 @@ spec:
   interval: 1m
   sourceRef:
     kind: GitRepository
-    name: devenvag
+    name: devenvag-bootstrap
   # sourceRef:
   #   kind: OCIRepository
   #   name: devenvag
@@ -121,7 +121,7 @@ spec:
   interval: 1m
   sourceRef:
     kind: GitRepository
-    name: devenvag
+    name: devenvag-bootstrap
   # sourceRef:
   #   kind: OCIRepository
   #   name: devenvag
@@ -143,7 +143,7 @@ spec:
   interval: 1m
   sourceRef:
     kind: GitRepository
-    name: devenvag
+    name: devenvag-bootstrap
   # sourceRef:
   #   kind: OCIRepository
   #   name: devenvag
@@ -155,6 +155,38 @@ spec:
       name: sops-gpg
   dependsOn:
     - name: platform05
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: gitlab
+      namespace: gitlab
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: platform07
+  namespace: env
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: devenvag-bootstrap
+  # sourceRef:
+  #   kind: OCIRepository
+  #   name: devenvag
+  path: ./environments/dev01/platform07/
+  prune: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
+  dependsOn:
+    - name: platform06
+  healthChecks:
+    - apiVersion: batch/v1
+      kind: Job
+      name: gitlab-bootstrap
+      namespace: gitlab
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -165,7 +197,7 @@ spec:
   interval: 1m
   sourceRef:
     kind: GitRepository
-    name: devenvag
+    name: devenvag-bootstrap
   # sourceRef:
   #   kind: OCIRepository
   #   name: devenvag
@@ -176,4 +208,4 @@ spec:
     secretRef:
       name: sops-gpg
   dependsOn:
-    - name: platform06
+    - name: platform07

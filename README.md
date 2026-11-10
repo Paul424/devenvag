@@ -4,21 +4,13 @@ This is just a small test to setup an airgapped development environment with too
 - gitlab + runners
 - harbor
 
-## Todo's
-
-- flux toevoegen met kustomize en environment tegen zot oci; dus een cluster artifact publiceren
-- Add harbor /w preconfigured secret
-- kip ei probleem; harbor liefst met chart, vereist flux vereist git, git komt pas met gitlab...
-- 
-
-
 ## Technical challenges
 
 **Bootstrap using local / private registry**
 
 1. Use [skopeo](https://github.com/podman-container-tools/skopeo) for prep'ing artifacts (charts / images) to disk and private registry
-2. [Zot registry](https://zotregistry.dev/v2.1.23/) for a temp. OCI compliant registry
-3. minikube confs to ensure artifact loading from private registry
+2. [Zot registry](https://zotregistry.dev/v2.1.23/) for a temp. OCI compliant registry for images, charts and the initial bootstrap manifests (flux)
+3. Minikube confs to ensure artifact loading from private registry
 
 *learnings*
 

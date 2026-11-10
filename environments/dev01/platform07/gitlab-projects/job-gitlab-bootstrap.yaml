@@ -1,0 +1,97 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gitlab-bootstrap
+  namespace: gitlab
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      serviceAccountName: gitlab-bootstrap
+      restartPolicy: OnFailure
+      volumes:
+        - name: ca
+          configMap:
+            name: root-ca
+      containers:
+        - name: bootstrap
+          image: nicolaka/netshoot:v0.16
+          # image: harbor.dev.local/docker.io/alpine/k8s:1.34.1
+          volumeMounts:
+            - name: ca
+              mountPath: /ca
+              readOnly: true
+          env:
+            - name: FLUX_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gitlab-flux-user-secret
+                  key: PASSWORD
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |-
+              set -euxo
+              G=http://gitlab-webservice-default.gitlab.svc.cluster.local:8181
+              GROUP=platform
+              REPO=devenvag
+              FLUXUSER=fluxr
+              SECRET=gitlab-fluxr-auth
+
+              if kubectl -n flux-system get secret "$SECRET" >/dev/null 2>&1; then
+                echo "secret $SECRET exists, skip"; exit 0
+              fi
+
+              kubectl -n gitlab wait --for=condition=available deploy/gitlab-toolbox --timeout=3m
+
+              # 1. token
+              BOOT="glpat-$(head -c 64 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 26)"
+              kubectl -n gitlab exec deploy/gitlab-toolbox -c toolbox -- gitlab-rails runner "
+                u = User.find_by_username('root')
+                u.personal_access_tokens.where(name: 'bootstrap').destroy_all
+                t = u.personal_access_tokens.build(name: 'bootstrap', scopes: [:api], expires_at: 1.day.from_now.to_date)
+                t.set_token('$BOOT')
+                t.save!
+              "
+
+              api() { curl -sS -H "PRIVATE-TOKEN: $BOOT" -H 'Content-Type: application/json' "$@"; }
+              status() { api -o /dev/null -w '%{http_code}' "$@"; }
+
+              # 2. group
+              if [ "$(status "$G/api/v4/groups/$GROUP")" != 200 ]; then
+                api -X POST "$G/api/v4/groups" -d "{\"name\":\"$GROUP\",\"path\":\"$GROUP\"}" >/dev/null
+              fi
+              GID=$(api "$G/api/v4/groups/$GROUP" | jq -r .id)
+
+              # 3. repo
+              if [ "$(status "$G/api/v4/projects/$GROUP%2F$REPO")" != 200 ]; then
+                api -X POST "$G/api/v4/projects" \
+                  -d "{\"name\":\"$REPO\",\"path\":\"$REPO\",\"namespace_id\":$GID,\"visibility\":\"private\",\"initialize_with_readme\":true}" >/dev/null
+              fi
+
+              # 4. local user
+              UID_=$(api "$G/api/v4/users?username=$FLUXUSER" | jq -r '.[0].id // empty')
+              if [ -z "$UID_" ]; then
+                UID_=$(api -X POST "$G/api/v4/users" -d "$(jq -nc --arg p "$FLUX_PASSWORD" \
+                  '{name:"Flux",username:"flux",email:"flux@dev.local",password:$p,skip_confirmation:true,can_create_group:false}')" | jq -r .id)
+              fi
+              [ -n "$UID_" ] && [ "$UID_" != null ] || { echo "Failed to create user"; exit 1; }
+
+              # 5. rechten: 20 = Reporter (read-only), 30 = Developer (nodig voor pushen)
+              api -X POST "$G/api/v4/groups/$GID/members" -d "{\"user_id\":$UID_,\"access_level\":20}" >/dev/null || true
+
+              # 6. PAT aanmaken (maximaal 365 dagen geldig)
+              EXP=$(date -u -d "@$(( $(date +%s) + 364*86400 ))" +%F)
+              TOKEN=$(api -X POST "$G/api/v4/users/$UID_/personal_access_tokens" \
+                -d "{\"name\":\"flux\",\"scopes\":[\"read_repository\"],\"expires_at\":\"$EXP\"}" | jq -r .token)
+              [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "Failed to create PAT"; exit 1; }
+
+              # 7. secret voor Flux (basic auth + CA)
+              kubectl -n flux-system create secret generic "$SECRET" \
+                --from-literal=username="$FLUXUSER" --from-literal=password="$TOKEN" \
+                --from-file=ca.crt=/ca/ca.crt
+
+              # 8. bootstrap-token intrekken
+              api -X DELETE "$G/api/v4/personal_access_tokens/self" -o /dev/null
+              echo "ready: $GROUP/$REPO, user $FLUXUSER, expiry $EXP"
