@@ -1,5 +1,15 @@
 # Notes
 
+[20261110]
+
+jq -nc --arg p Gritlab01 '{name:"Flux",username:"flux",email:"flux@dev.local",password:$p,skip_confirmation:true,can_create_group:false}'                                                                │
+
+api -X POST http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/api/v4/users -d '{"name":"Flux","username":"flux","email":"flux@dev.local","password":"Gritlab01","skip_confirmation":true,"c │
+
+curl -sS -H 'PRIVATE-TOKEN: glpat-JbPKIkAIssgqN5EitvFNNOvui8' -H 'Content-Type: application/json' -X POST http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/api/v4/users -d '{"name":"Flux","username":"flux","email":"flux@dev.local","password":"Gritlab01","skip_confirmation":true,"can_create_group":false}'
+
+│ gitlab-bootstrap-cg4v7 Failed to create user         
+
 [20261109]
 
 docker.io/envoyproxy/envoy:distroless-v1.39.6
