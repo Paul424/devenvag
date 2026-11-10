@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - gitlab-projects
+# - gitlab-runner
 
 transformers:
 - |-

@@ -17,18 +17,25 @@ spec:
                 secretKeyRef:
                   name: harbor-admin-password
                   key: HARBOR_ADMIN_PASSWORD
-            - name: ROBOT_SECRET
+            - name: ROBOT_PUSHER_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: harbor-robot-secret
+                  name: harbor-robot-pusher-secret
+                  key: SECRET
+            - name: ROBOT_PULLER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: harbor-robot-puller-secret
                   key: SECRET
           command: ["/bin/sh", "-c"]
           args:
             - |
               set -euxo
               HARBOR_URL=http://harbor-core.harbor.svc.cluster.local
-              ROBOT=pusher
-              FULLNAME='robot$pusher'
+              ROBOT_PUSHER=pusher
+              FULLNAME_PUSHER='robot$pusher'
+              ROBOT_PULLER=puller
+              FULLNAME_PULLER='robot$puller'
 
               # code-only (POST/PATCH)
               call() { # method path body
@@ -45,17 +52,33 @@ spec:
 
               # robot aanmaken zonder secret (409 = bestaat al)
               ok "$(call POST /api/v2.0/robots '{
-                "name":"'"$ROBOT"'","level":"system","duration":-1,
+                "name":"'"$ROBOT_PUSHER"'","level":"system","duration":-1,
                 "permissions":[{"kind":"project","namespace":"*",
                   "access":[{"resource":"repository","action":"push"},
-                            {"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT"
+                            {"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PUSHER"
 
-              ID=$(get "/api/v2.0/robots?page_size=100" \
-                | jq -r --arg n "$FULLNAME" '.[] | select(.name==$n) | .id' | head -1)
+              ID=$(get "/api/v2.0/robots?q=name%3Drobot%24pusher&page_size=100" \
+                | jq -r --arg n "$FULLNAME_PUSHER" '.[] | select(.name==$n) | .id' | head -1)
               [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
 
               # secret expliciet zetten; 200 is het enige geldige resultaat
-              BODY=$(jq -nc --arg s "$ROBOT_SECRET" '{secret:$s}')
+              BODY=$(jq -nc --arg s "$ROBOT_PUSHER_SECRET" '{secret:$s}')
+              code=$(call PATCH "/api/v2.0/robots/$ID" "$BODY")
+              [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
+              echo "secret set for robot id=$ID"
+
+              # robot aanmaken zonder secret (409 = bestaat al)
+              ok "$(call POST /api/v2.0/robots '{
+                "name":"'"$ROBOT_PULLER"'","level":"system","duration":-1,
+                "permissions":[{"kind":"project","namespace":"*",
+                  "access":[{"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PULLER"
+
+              ID=$(get "/api/v2.0/robots?q=name%3Drobot%24puller&page_size=100" \
+                | jq -r --arg n "$FULLNAME_PULLER" '.[] | select(.name==$n) | .id' | head -1)
+              [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
+
+              # secret expliciet zetten; 200 is het enige geldige resultaat
+              BODY=$(jq -nc --arg s "$ROBOT_PULLER_SECRET" '{secret:$s}')
               code=$(call PATCH "/api/v2.0/robots/$ID" "$BODY")
               [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
               echo "secret set for robot id=$ID"

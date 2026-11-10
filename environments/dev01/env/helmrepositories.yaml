@@ -1,3 +1,4 @@
+---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
@@ -9,3 +10,16 @@ spec:
   url: oci://host.minikube.internal:5000/charts
   certSecretRef:
     name: registry-zot-ca
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: charts
+  namespace: env
+spec:
+  type: oci
+  interval: 10m
+  url: oci://harbor-core.harbor.svc.cluster.local/charts
+  insecure: true
+  secretRef:
+    name: harbor-robot-puller-secret
