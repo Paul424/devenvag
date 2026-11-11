@@ -1,5 +1,9 @@
 # Notes
 
+[20261111]
+
+
+
 [20261110]
 
 jq -nc --arg p Gritlab01 '{name:"Flux",username:"flux",email:"flux@dev.local",password:$p,skip_confirmation:true,can_create_group:false}'                                                                │
@@ -23,64 +27,11 @@ env                   platform04            False            Secret/gitlab/gitla
 │   Warning  InstallFailed  5m36s  helm-controller  Helm install failed for release gitlab/gitlab with chart gitlab@10.5.4: unable to build kubernetes objects from release manifest: [resource mapping not found for name: "gitlab │
 │ -gw" namespace: "gitlab" from "": no matches for kind "Gateway" in version "gateway.networking.k8s.io/v1"                                                                                                                  
 
+curl -sf -u admin:admin 'http://harbor-core.harbor.svc.cluster.local/api/v2.0/robots?q=name%3Drobot%24pusher&page_size=100'
+
 curl -u "admin:admin" -H 'Content-Type: application/json' -XGET http://harbor-core.harbor.svc.cluster.local/api/v2.0/robots?q=name%3Drobot%24pusher&page_size=100
 
 
-
-
-
-              set -euxo
-              HARBOR_URL=
-              ROBOT_PUSHER=pusher
-              FULLNAME_PUSHER='robot$pusher'
-              ROBOT_PULLER=puller
-              FULLNAME_PULLER='robot$puller'
-
-              # code-only (POST/PATCH)
-              call() { # method path body
-                curl -s -o /dev/null -w '%{http_code}' -u "admin:$PASS" \
-                  -H 'Content-Type: application/json' -X "$1" "$HARBOR_URL$2" -d "$3"
-              }
-              # body terug (GET)
-              get() { curl -sf -u "admin:$PASS" "$HARBOR_URL$1"; }
-              ok() { case "$1" in 200|201|409) echo "$2: ok ($1)";; *) echo "$2: failed ($1)"; exit 1;; esac; }
-
-              for p in registry.k8s.io gcr.io quay.io ghcr.io docker.io charts; do
-                ok "$(call POST /api/v2.0/projects "{\"project_name\":\"$p\",\"public\":false}")" "project $p"
-              done
-
-              # robot aanmaken zonder secret (409 = bestaat al)
-              ok "$(call POST /api/v2.0/robots '{
-                "name":"'"$ROBOT_PUSHER"'","level":"system","duration":-1,
-                "permissions":[{"kind":"project","namespace":"*",
-                  "access":[{"resource":"repository","action":"push"},
-                            {"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PUSHER"
-
-              ID=$(get "/api/v2.0/robots?q=name%3Drobot%24pusher&page_size=100" \
-                | jq -r --arg n "$FULLNAME_PUSHER" '.[] | select(.name==$n) | .id' | head -1)
-              [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
-
-              # secret expliciet zetten; 200 is het enige geldige resultaat
-              BODY=$(jq -nc --arg s "$ROBOT_PUSHER_SECRET" '{secret:$s}')
-              code=$(call PATCH "/api/v2.0/robots/$ID" "$BODY")
-              [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
-              echo "secret set for robot id=$ID"
-
-              # robot aanmaken zonder secret (409 = bestaat al)
-              ok "$(call POST /api/v2.0/robots '{
-                "name":"'"$ROBOT_PULLER"'","level":"system","duration":-1,
-                "permissions":[{"kind":"project","namespace":"*",
-                  "access":[{"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PULLER"
-
-              ID=$(get "/api/v2.0/robots?q=name%3Drobot%24puller&page_size=100" \
-                | jq -r --arg n "$FULLNAME_PULLER" '.[] | select(.name==$n) | .id' | head -1)
-              [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
-
-              # secret expliciet zetten; 200 is het enige geldige resultaat
-              BODY=$(jq -nc --arg s "$ROBOT_PULLER_SECRET" '{secret:$s}')
-              code=$(call PATCH "/api/v2.0/robots/$ID" "$BODY")
-              [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
-              echo "secret set for robot id=$ID"
 
 
 [20261109]

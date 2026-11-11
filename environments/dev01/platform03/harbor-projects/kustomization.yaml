@@ -5,6 +5,8 @@ resources:
 - secrets
 - job-harbor-bootstrap.yaml
 - netshoot.yaml
+- sa.yaml
+- rbac.yaml
 
 images:
   - name: nicolaka/netshoot
