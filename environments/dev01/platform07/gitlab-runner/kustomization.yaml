@@ -6,9 +6,9 @@ configurations:
 
 resources:
 - ../../../base/gitlab-runner
-# - secrets
-# - tls.yaml
-# - trust.yaml
+- job-gitlab-runner-bootstrap.yaml
+- sa.yaml
+- rbac.yaml
 
 images:
   - name: docker.io/alpine/k8s

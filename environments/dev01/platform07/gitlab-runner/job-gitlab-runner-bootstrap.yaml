@@ -7,30 +7,30 @@ spec:
   backoffLimit: 6
   template:
     spec:
-      # serviceAccountName: gitlab-runner-bootstrap
+      serviceAccountName: gitlab-runner-bootstrap
       restartPolicy: OnFailure
-      volumes:
-        - name: ca
-          configMap:
-            name: root-ca
+      # volumes:
+      #   - name: ca
+      #     configMap:
+      #       name: root-ca
       containers:
         - name: bootstrap
           image: docker.io/alpine/k8s:1.34.1
-          volumeMounts:
-            - name: ca
-              mountPath: /ca
-              readOnly: true
-          env:
-            - name: FLUXR_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: gitlab-flux-user-secret
-                  key: PASSWORD
-            - name: PUSHR_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: gitlab-pushr-user-secret
-                  key: PASSWORD
+          # volumeMounts:
+          #   - name: ca
+          #     mountPath: /ca
+          #     readOnly: true
+          # env:
+          #   - name: FLUXR_PASSWORD
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: gitlab-flux-user-secret
+          #         key: PASSWORD
+          #   - name: PUSHR_PASSWORD
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: gitlab-pushr-user-secret
+          #         key: PASSWORD
           command:
             - /bin/sh
             - -c
@@ -39,9 +39,11 @@ spec:
               set -euxo
               G=http://gitlab-webservice-default.gitlab.svc.cluster.local:8181
               RUNNER_TOKEN_SECRET=gitlab-runner-token
+              RUNNER=kuberunner
 
               if kubectl -n gitlab get secret "$RUNNER_TOKEN_SECRET" >/dev/null 2>&1; then
-                echo "secret $RUNNER_TOKEN_SECRET exists, skip"; exit 0
+                echo "Secret $RUNNER_TOKEN_SECRET already exists; skipping runner creation"
+                exit 0
               fi
 
               kubectl -n gitlab wait --for=condition=available deploy/gitlab-toolbox --timeout=3m
@@ -56,15 +58,38 @@ spec:
                 t.save!
               "
 
-              api() { curl -sS -H "PRIVATE-TOKEN: $BOOT" -H 'Content-Type: application/json' "$@"; }
-              status() { api -o /dev/null -w '%{http_code}' "$@"; }
+              api() {
+                curl --fail --silent --show-error \
+                  -H "PRIVATE-TOKEN: $BOOT" \
+                  -H 'Content-Type: application/json' "$@"
+              }
+
+              RUNNER_RESPONSE=$(api -X POST "$G/api/v4/user/runners" \
+                -d "$(jq -nc --arg description "$RUNNER" \
+                  '{runner_type:"instance_type",description:$description,tag_list:["kubernetes"],run_untagged:true}')")
+              RUNNER_TOKEN=$(printf '%s' "$RUNNER_RESPONSE" | jq -r '.token // empty')
+              if [ -z "$RUNNER_TOKEN" ]; then
+                echo "GitLab did not return a runner authentication token" >&2
+                exit 1
+              fi
+
+              kubectl -n gitlab create secret generic "$RUNNER_TOKEN_SECRET" \
+                --from-literal=runner-token="$RUNNER_TOKEN" \
+                --from-literal=runner-registration-token= \
+                --dry-run=client -o yaml | kubectl apply -f -
+
+              api -X DELETE "$G/api/v4/personal_access_tokens/self" -o /dev/null
+              echo "Created instance runner $RUNNER and secret $RUNNER_TOKEN_SECRET"
 
 
+  # api() { curl -sS -H "PRIVATE-TOKEN: $BOOT" -H 'Content-Type: application/json' "$@"; }
+  # status() { api -o /dev/null -w '%{http_code}' "$@"; }
 
-
-
-
-
+  # # 1. runner
+  # if [ "$(status "$G/api/v4/runners")" != 200 ]; then
+  #   api -X POST "$G/api/v4/runners" \
+  #     -d "{\"name\":\"$REPO\",\"path\":\"$REPO\",\"namespace_id\":$GID,\"visibility\":\"private\",\"initialize_with_readme\":false}" >/dev/null
+  # fi
 
 
 # # 2. group
@@ -133,3 +158,30 @@ spec:
 
 # # 13. summary
 # echo "ready: $GROUP/$REPO, users $FLUXRUSER $PUSHRUSER, expiry $EXP"
+
+
+
+
+
+      # api() {
+      #   curl --fail --silent --show-error \
+      #     -H "PRIVATE-TOKEN: $BOOT" \
+      #     -H 'Content-Type: application/json' "$@"
+      # }
+
+      # RUNNER_RESPONSE=$(api -X POST "$G/api/v4/user/runners" \
+      #   -d "$(jq -nc --arg description "$RUNNER" \
+      #     '{runner_type:"instance_type",description:$description,tag_list:["kubernetes"],run_untagged:true}')")
+      # RUNNER_TOKEN=$(printf '%s' "$RUNNER_RESPONSE" | jq -r '.token // empty')
+      # if [ -z "$RUNNER_TOKEN" ]; then
+      #   echo "GitLab did not return a runner authentication token" >&2
+      #   exit 1
+      # fi
+
+      # kubectl -n gitlab create secret generic "$RUNNER_TOKEN_SECRET" \
+      #   --from-literal=runner-token="$RUNNER_TOKEN" \
+      #   --from-literal=runner-registration-token= \
+      #   --dry-run=client -o yaml | kubectl apply -f -
+
+      # api -X DELETE "$G/api/v4/personal_access_tokens/self" -o /dev/null
+      # echo "Created instance runner $RUNNER and secret $RUNNER_TOKEN_SECRET"
