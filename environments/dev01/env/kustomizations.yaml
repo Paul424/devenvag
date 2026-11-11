@@ -216,3 +216,22 @@ spec:
       name: sops-gpg
   dependsOn:
     - name: platform07
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: platform21
+  namespace: env
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: devenvag
+  path: ./environments/dev01/platform21/
+  prune: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
+  dependsOn:
+    - name: platform09

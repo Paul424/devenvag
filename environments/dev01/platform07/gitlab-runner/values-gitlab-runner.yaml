@@ -1,3 +1,29 @@
-# global:
-#   image:
-    # registry: host.minikube.internal:5000/gitlab-org/
+image:
+  registry: host.minikube.internal:5000
+#   repository: gitlab-org/gitlab-runner
+
+gitlabUrl: https://gitlab.dev.local
+
+# certsSecretName: root-ca-runner    # secret met key gitlab.dev.local.crt
+
+runners:
+  config: |
+    [[runners]]
+      [runners.kubernetes]
+        namespace = "gitlab-runners"
+        image = "host.minikube.internal:5000/docker.io/library/alpine:3.22"
+        helper_image = "host.minikube.internal:5000/registry.gitlab.com/gitlab-org/gitlab-runner/gitlab-runner-helper:x86_64-v19.5.3"
+        pull_policy = ["if-not-present"]
+
+  # The name of the secret containing runner-token and runner-registration-token
+  secret: gitlab-runner-token
+
+
+
+# Het huidige model gebruikt runner authentication tokens (glrt-...):
+
+# Maak de runner aan via de UI of API (POST /user/runners, met een PAT of admin-token). 
+# Het antwoord bevat het token.
+# Zet dat token in een SOPS-secret met de keys runner-token en runner-registration-token 
+# (die laatste leeg).
+# Verwijs ernaar met runners.secret in de values.
