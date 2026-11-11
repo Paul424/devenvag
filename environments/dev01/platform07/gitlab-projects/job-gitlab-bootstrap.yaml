@@ -75,6 +75,9 @@ spec:
                 api -X POST "$G/api/v4/projects" \
                   -d "{\"name\":\"$REPO\",\"path\":\"$REPO\",\"namespace_id\":$GID,\"visibility\":\"private\",\"initialize_with_readme\":false}" >/dev/null
               fi
+              api -X DELETE "$G/api/v4/projects/$GROUP%2F$REPO/protected_branches/main" -o /dev/null || true
+              api -X POST "$G/api/v4/projects/$GROUP%2F$REPO/protected_branches" \
+                -d '{"name":"main","push_access_level":30,"merge_access_level":30}'              
 
               # 4. local user fluxr
               UID_=$(api "$G/api/v4/users?username=$FLUXRUSER" | jq -r '.[0].id // empty')

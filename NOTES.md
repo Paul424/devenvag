@@ -2,7 +2,8 @@
 
 [20261111]
 
-
+- push to gitlab werkt (maar let op; soms is de root-ca er niet, iets van de trust-manager).
+- 
 
 [20261110]
 
