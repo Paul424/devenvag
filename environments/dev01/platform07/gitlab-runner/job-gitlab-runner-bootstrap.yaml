@@ -1,0 +1,135 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gitlab-runner-bootstrap
+  namespace: gitlab
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      # serviceAccountName: gitlab-runner-bootstrap
+      restartPolicy: OnFailure
+      volumes:
+        - name: ca
+          configMap:
+            name: root-ca
+      containers:
+        - name: bootstrap
+          image: docker.io/alpine/k8s:1.34.1
+          volumeMounts:
+            - name: ca
+              mountPath: /ca
+              readOnly: true
+          env:
+            - name: FLUXR_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gitlab-flux-user-secret
+                  key: PASSWORD
+            - name: PUSHR_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gitlab-pushr-user-secret
+                  key: PASSWORD
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |-
+              set -euxo
+              G=http://gitlab-webservice-default.gitlab.svc.cluster.local:8181
+              RUNNER_TOKEN_SECRET=gitlab-runner-token
+
+              if kubectl -n gitlab get secret "$RUNNER_TOKEN_SECRET" >/dev/null 2>&1; then
+                echo "secret $RUNNER_TOKEN_SECRET exists, skip"; exit 0
+              fi
+
+              kubectl -n gitlab wait --for=condition=available deploy/gitlab-toolbox --timeout=3m
+
+              # 1. token
+              BOOT="glpat-$(head -c 64 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 26)"
+              kubectl -n gitlab exec deploy/gitlab-toolbox -c toolbox -- gitlab-rails runner "
+                u = User.find_by_username('root')
+                u.personal_access_tokens.where(name: 'bootstrap').destroy_all
+                t = u.personal_access_tokens.build(name: 'bootstrap', scopes: [:api], expires_at: 1.day.from_now.to_date)
+                t.set_token('$BOOT')
+                t.save!
+              "
+
+              api() { curl -sS -H "PRIVATE-TOKEN: $BOOT" -H 'Content-Type: application/json' "$@"; }
+              status() { api -o /dev/null -w '%{http_code}' "$@"; }
+
+
+
+
+
+
+
+
+
+# # 2. group
+# if [ "$(status "$G/api/v4/groups/$GROUP")" != 200 ]; then
+#   api -X POST "$G/api/v4/groups" -d "{\"name\":\"$GROUP\",\"path\":\"$GROUP\"}" >/dev/null
+# fi
+# GID=$(api "$G/api/v4/groups/$GROUP" | jq -r .id)
+
+# # 3. repo
+# if [ "$(status "$G/api/v4/projects/$GROUP%2F$REPO")" != 200 ]; then
+#   api -X POST "$G/api/v4/projects" \
+#     -d "{\"name\":\"$REPO\",\"path\":\"$REPO\",\"namespace_id\":$GID,\"visibility\":\"private\",\"initialize_with_readme\":false}" >/dev/null
+# fi
+# api -X DELETE "$G/api/v4/projects/$GROUP%2F$REPO/protected_branches/main" -o /dev/null || true
+# api -X POST "$G/api/v4/projects/$GROUP%2F$REPO/protected_branches" \
+#   -d '{"name":"main","push_access_level":30,"merge_access_level":30}'              
+
+# # 4. local user fluxr
+# UID_=$(api "$G/api/v4/users?username=$FLUXRUSER" | jq -r '.[0].id // empty')
+# if [ -z "$UID_" ]; then
+#   UID_=$(api -X POST "$G/api/v4/users" -d "$(jq -nc --arg p "$FLUXR_PASSWORD" \
+#     '{name:"Flux",username:"fluxr",email:"fluxr@dev.local",password:$p,skip_confirmation:true,can_create_group:false}')" | jq -r .id)
+# fi
+# [ -n "$UID_" ] && [ "$UID_" != null ] || { echo "Failed to create user"; exit 1; }
+
+# # 5. rechten: 20 = Reporter (read-only), 30 = Developer (nodig voor pushen)
+# api -X POST "$G/api/v4/groups/$GID/members" -d "{\"user_id\":$UID_,\"access_level\":20}" >/dev/null || true
+
+# # 6. PAT aanmaken (maximaal 365 dagen geldig)
+# EXP=$(date -u -d "@$(( $(date +%s) + 364*86400 ))" +%F)
+# TOKEN=$(api -X POST "$G/api/v4/users/$UID_/personal_access_tokens" \
+#   -d "{\"name\":\"fluxr\",\"scopes\":[\"read_repository\"],\"expires_at\":\"$EXP\"}" | jq -r .token)
+# [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "Failed to create PAT"; exit 1; }
+
+# # 7. secret voor Flux (basic auth + CA)
+# kubectl -n env create secret generic "$FLUXRSECRET" \
+#   --from-literal=username="$FLUXRUSER" --from-literal=password="$TOKEN" \
+#   --from-file=ca.crt=/ca/ca.crt \
+#   --dry-run=client -o yaml | kubectl apply -f -
+
+# # 8. local user pushr
+# UID_=$(api "$G/api/v4/users?username=$PUSHRUSER" | jq -r '.[0].id // empty')
+# if [ -z "$UID_" ]; then
+#   UID_=$(api -X POST "$G/api/v4/users" -d "$(jq -nc --arg p "$PUSHR_PASSWORD" \
+#     '{name:"Push",username:"pushr",email:"pushr@dev.local",password:$p,skip_confirmation:true,can_create_group:false}')" | jq -r .id)
+# fi
+# [ -n "$UID_" ] && [ "$UID_" != null ] || { echo "Failed to create user"; exit 1; }
+
+# # 9. rechten: 30 = Developer (nodig voor pushen)
+# api -X POST "$G/api/v4/groups/$GID/members" -d "{\"user_id\":$UID_,\"access_level\":30}" >/dev/null || true
+
+# # 10. PAT aanmaken (maximaal 365 dagen geldig)
+# EXP=$(date -u -d "@$(( $(date +%s) + 364*86400 ))" +%F)
+# TOKEN=$(api -X POST "$G/api/v4/users/$UID_/personal_access_tokens" \
+#   -d "{\"name\":\"pushr\",\"scopes\":[\"read_repository\",\"write_repository\"],\"expires_at\":\"$EXP\"}" | jq -r .token)
+# [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "Failed to create PAT"; exit 1; }
+
+# # 11. secret voor Flux (basic auth + CA)
+# kubectl -n env create secret generic "$PUSHRSECRET" \
+#   --from-literal=username="$PUSHRUSER" --from-literal=password="$TOKEN" \
+#   --from-file=ca.crt=/ca/ca.crt \
+#   --dry-run=client -o yaml | kubectl apply -f -
+
+# # 12. bootstrap-token intrekken
+# api -X DELETE "$G/api/v4/personal_access_tokens/self" -o /dev/null
+
+# # 13. summary
+# echo "ready: $GROUP/$REPO, users $FLUXRUSER $PUSHRUSER, expiry $EXP"

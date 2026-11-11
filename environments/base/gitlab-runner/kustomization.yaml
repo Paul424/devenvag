@@ -11,8 +11,8 @@ resources:
 configMapGenerator:
 - behavior: create
   files:
-  - values.yaml=common-gitlab.yaml
-  name: common-gitlab
+  - values.yaml=common-gitlab-runner.yaml
+  name: common-gitlab-runner
 
 transformers:
 - |-

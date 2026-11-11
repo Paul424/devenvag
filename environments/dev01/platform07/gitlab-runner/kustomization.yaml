@@ -10,6 +10,10 @@ resources:
 # - tls.yaml
 # - trust.yaml
 
+images:
+  - name: docker.io/alpine/k8s
+    newName: host.minikube.internal:5000/docker.io/alpine/k8s
+
 configMapGenerator:
 - behavior: create
   files:
