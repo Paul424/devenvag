@@ -9,8 +9,10 @@ resources:
 - rbac.yaml
 
 images:
-  - name: nicolaka/netshoot
-    newName: host.minikube.internal:5000/docker.io/nicolaka/netshoot
+  # - name: nicolaka/netshoot
+  #   newName: host.minikube.internal:5000/docker.io/nicolaka/netshoot
+  - name: docker.io/alpine/k8s
+    newName: host.minikube.internal:5000/docker.io/alpine/k8s
 
 transformers:
 - |-
