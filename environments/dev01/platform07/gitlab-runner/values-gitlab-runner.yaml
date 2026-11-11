@@ -1,6 +1,6 @@
 image:
   registry: host.minikube.internal:5000
-#   repository: gitlab-org/gitlab-runner
+  repository: registry.gitlab.com/gitlab-org/gitlab-runner
 
 gitlabUrl: https://gitlab.dev.local
 
@@ -17,13 +17,3 @@ runners:
 
   # The name of the secret containing runner-token and runner-registration-token
   secret: gitlab-runner-token
-
-
-
-# Het huidige model gebruikt runner authentication tokens (glrt-...):
-
-# Maak de runner aan via de UI of API (POST /user/runners, met een PAT of admin-token). 
-# Het antwoord bevat het token.
-# Zet dat token in een SOPS-secret met de keys runner-token en runner-registration-token 
-# (die laatste leeg).
-# Verwijs ernaar met runners.secret in de values.
