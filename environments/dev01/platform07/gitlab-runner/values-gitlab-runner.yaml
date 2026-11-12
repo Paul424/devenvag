@@ -4,6 +4,12 @@ image:
 
 gitlabUrl: https://gitlab.dev.local
 
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+
 # See: https://docs.gitlab.com/runner/install/kubernetes_helm_chart_configuration/#access-gitlab-with-a-custom-certificate
 certsSecretName: gitlab-runner-ca
 
