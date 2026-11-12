@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: gitlab-runner-bootstrap
-  namespace: gitlab
+  # namespace: gitlab
 spec:
   backoffLimit: 6
   template:

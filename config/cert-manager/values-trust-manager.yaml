@@ -1,0 +1,5 @@
+secretTargets:
+  enabled: true
+  authorizedSecrets:
+    # Enables to copy the root-ca into the gitlab namespace for the gitlab-runner pod to trust gitlab
+    - gitlab-runner-ca

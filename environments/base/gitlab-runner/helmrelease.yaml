@@ -3,7 +3,7 @@ kind: HelmRelease
 metadata:
   name: gitlab-runner
 spec:
-  targetNamespace: gitlab
+  targetNamespace: gitlab-runner
   releaseName: gitlab-runner
   interval: 5m
   chart:

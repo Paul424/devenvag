@@ -7,5 +7,5 @@ This is just the default deployment manifests from [link](https://github.com/cer
 Cert-managers trust-manager is added to publish CA's to a public endpoint.
 
 ```
-helm template trust-manager --namespace cert-manager oci://quay.io/jetstack/charts/trust-manager > trust-manager.yaml
+helm template trust-manager --namespace cert-manager oci://quay.io/jetstack/charts/trust-manager --values ./config/cert-manager/values-trust-manager.yaml > trust-manager.yaml
 ```

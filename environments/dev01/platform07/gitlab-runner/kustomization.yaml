@@ -26,5 +26,5 @@ transformers:
   kind: NamespaceTransformer
   metadata:
     name: not-relevant-here
-    namespace: gitlab
+    namespace: gitlab-runner
   unsetOnly: true
