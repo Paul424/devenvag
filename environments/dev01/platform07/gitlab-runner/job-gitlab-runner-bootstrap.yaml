@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: gitlab-runner-bootstrap
-  # namespace: gitlab
+  namespace: gitlab-runner
 spec:
   backoffLimit: 6
   template:
@@ -41,7 +41,7 @@ spec:
               RUNNER_TOKEN_SECRET=gitlab-runner-token
               RUNNER=kuberunner
 
-              if kubectl -n gitlab get secret "$RUNNER_TOKEN_SECRET" >/dev/null 2>&1; then
+              if kubectl -n gitlab-runner get secret "$RUNNER_TOKEN_SECRET" >/dev/null 2>&1; then
                 echo "Secret $RUNNER_TOKEN_SECRET already exists; skipping runner creation"
                 exit 0
               fi
@@ -73,7 +73,7 @@ spec:
                 exit 1
               fi
 
-              kubectl -n gitlab create secret generic "$RUNNER_TOKEN_SECRET" \
+              kubectl -n gitlab-runner create secret generic "$RUNNER_TOKEN_SECRET" \
                 --from-literal=runner-token="$RUNNER_TOKEN" \
                 --from-literal=runner-registration-token= \
                 --dry-run=client -o yaml | kubectl apply -f -

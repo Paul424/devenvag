@@ -9,6 +9,7 @@ resources:
 - job-gitlab-runner-bootstrap.yaml
 - sa.yaml
 - rbac.yaml
+- trust.yaml
 
 images:
   - name: docker.io/alpine/k8s

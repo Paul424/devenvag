@@ -1,5 +1,10 @@
 # Notes
 
+[20261112]
+
+   MountVolume.SetUp failed for volume "projected-secrets" : secret "gitlab-runner-token" not found                                                                    │
+│   Warning  FailedMount  3s (x8 over 67s)   kubelet            MountVolume.SetUp failed for volume "custom-certs" : secret "gitlab-runner-ca" not found      
+
 [20261111]
 
 - push to gitlab werkt (maar let op; soms is de root-ca er niet, iets van de trust-manager).
