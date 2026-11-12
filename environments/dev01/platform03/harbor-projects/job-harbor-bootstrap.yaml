@@ -47,7 +47,7 @@ spec:
               get() { curl -sf -u "admin:$PASS" "$HARBOR_URL$1"; }
               ok() { case "$1" in 200|201|409) echo "$2: ok ($1)";; *) echo "$2: failed ($1)"; exit 1;; esac; }
 
-              for p in registry.k8s.io gcr.io quay.io ghcr.io docker.io charts; do
+              for p in registry.k8s.io gcr.io quay.io ghcr.io docker.io registry.gitlab.com charts; do
                 ok "$(call POST /api/v2.0/projects "{\"project_name\":\"$p\",\"public\":false}")" "project $p"
               done
 
