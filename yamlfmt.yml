@@ -1,0 +1,55 @@
+spec:
+  inputs:
+    stage:
+      default: validate
+---
+
+yamlfmt:
+  stage: $[[ inputs.stage ]]
+  needs: []
+  image:
+    name: registry.gitlab.com/gitlab-com/gl-infra/common-ci-tasks-images/yamlfmt:${GL_ASDF_YAMLFMT_VERSION}
+    entrypoint: [""]
+  script:
+    # yamlfmt will fail if this file doesn't exist.
+    - touch .yamlfmtignore
+    - |
+      declare -a PATTERNS=('*.yaml' '*.yml')
+      if [[ -e .yamlfmtextra ]]; then
+        IFS=' '
+        while read -r pattern; do
+          PATTERNS+=("${pattern}")
+        done <<<$(grep -E -v '^\s*(#|$)' .yamlfmtextra)
+      fi
+    - |
+      # Dump yamlfmt config
+      echo "# /etc/yamlfmt.yaml"
+      cat /etc/yamlfmt.yaml
+    - yamlfmt -conf /etc/yamlfmt.yaml "${PATTERNS[@]}"
+    - git diff | tee yamlfmt.patch
+    - |
+      if [[ -s yamlfmt.patch ]]; then
+        red="$(printf "\e[31;1m")"
+        reset="$(printf "\e[0m")"
+        echo "${red}Some YAML files are not formatted correctly. Run the following command in the repository root to fix:${reset}"
+        echo "${red}# curl ${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/yamlfmt.patch | patch -p1${reset}"
+        exit 1
+      fi
+  after_script: |
+    cat <<-EOD
+    ----------------------------------------------------------
+    Need help? Documentation on the yamlfmt CI job can be found at:
+    https://gitlab.com/gitlab-com/gl-infra/common-ci-tasks/-/blob/main/yamlfmt.md
+    EOD
+  rules:
+    - if: '$GL_ASDF_YAMLFMT_VERSION == null || $GL_ASDF_YAMLFMT_VERSION == ""'
+      when: 'never'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: 'never'
+    - if: '($CI_PIPELINE_SOURCE == "merge_request_event") || ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH)'
+  allow_failure: true
+  artifacts:
+    paths:
+      - yamlfmt.patch
+    expose_as: 'yamlfmt patch'
+    when: on_failure
