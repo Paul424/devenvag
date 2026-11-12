@@ -12,4 +12,4 @@ spec:
       key: gitlab.dev.local.crt
     namespaceSelector:
       matchLabels:
-        kubernetes.io/metadata.name: gitlab-runners
+        kubernetes.io/metadata.name: gitlab-runner
