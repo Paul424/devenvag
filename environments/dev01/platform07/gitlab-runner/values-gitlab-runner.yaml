@@ -11,7 +11,7 @@ runners:
   config: |
     [[runners]]
       [runners.kubernetes]
-        namespace = "gitlab-runners"
+        namespace = "gitlab-runner"
         image = "host.minikube.internal:5000/docker.io/library/alpine:3.22"
         helper_image = "host.minikube.internal:5000/registry.gitlab.com/gitlab-org/gitlab-runner/gitlab-runner-helper:x86_64-v19.5.3"
         pull_policy = ["if-not-present"]

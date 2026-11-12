@@ -17,6 +17,6 @@ spec:
           operator: In
           values:
             - gitlab
-            - gitlab-runners
+            - gitlab-runner
             - harbor
             - flux-system
