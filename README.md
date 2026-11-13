@@ -22,15 +22,15 @@ This is just a small test to setup an airgapped development environment with too
 
 **Jobs**
 
-Jobs are used to setup harbor projects, gitlab repo / users and gitlab runners. It would be much better to manage this using an operator.
+Jobs are used to setup harbor projects, gitlab repo / users and gitlab runners. It would be much better to manage this using an operator. Jobs for instance are immutable.
 
-**HA Gitlab /w dependencies**
+**Other topics not addressed yet**
 
-x
+1. HA Gitlab /w dependencies
+2. Hardened images / scanning**
+3. Backups
 
-**Hardened images / scanning**
 
-todo
 
 ## Prerequisites
 
