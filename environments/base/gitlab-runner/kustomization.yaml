@@ -2,24 +2,24 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 configurations:
-- namerefs.yaml
+  - namerefs.yaml
 
 resources:
-- secrets
-- helmrelease.yaml
-- namespace.yaml
+  - secrets
+  - helmrelease.yaml
+  - namespace.yaml
 
 configMapGenerator:
-- behavior: create
-  files:
-  - values.yaml=common-gitlab-runner.yaml
-  name: common-gitlab-runner
+  - behavior: create
+    files:
+      - values.yaml=common-gitlab-runner.yaml
+    name: common-gitlab-runner
 
 transformers:
-- |-
-  apiVersion: builtin
-  kind: NamespaceTransformer
-  metadata:
-    name: not-relevant-here
-    namespace: gitlab-runner
-  unsetOnly: true
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: not-relevant-here
+      namespace: gitlab-runner
+    unsetOnly: true

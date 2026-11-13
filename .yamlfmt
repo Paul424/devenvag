@@ -3,9 +3,14 @@ formatter:
   indent: 2
   retain_line_breaks_single: true   # laat enkele lege regels staan
   include_document_start: false
+match_type: doublestar
 exclude:
+  - "artifacts/**"
+  - "ca/**"
+  - "asc/**"
+  - "charts/**"
+  - "logs/**"
   - "**/templates/**"
-  - "**/*.sops.yaml"
   - "**/*-enc.yaml"
   - "secrets/**"
   - "job-*.yaml"

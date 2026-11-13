@@ -1,4 +1,3 @@
----
 # Source: trust-manager/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -547,11 +546,11 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-cluster-reader: "true"
   name: trust-manager-cluster-view
 rules:
-- apiGroups:
-  - "trust.cert-manager.io"
-  resources:
-  - "bundles"
-  verbs: ["get", "list", "watch"]
+  - apiGroups:
+      - "trust.cert-manager.io"
+    resources:
+      - "bundles"
+    verbs: ["get", "list", "watch"]
 
 ---
 # Source: trust-manager/templates/clusterrole.yaml
@@ -566,57 +565,57 @@ metadata:
     helm.sh/chart: trust-manager-v0.26.0
   name: trust-manager
 rules:
-- apiGroups:
-  - "trust.cert-manager.io"
-  resources:
-  - "bundles"
-  verbs: ["get", "list", "watch"]
+  - apiGroups:
+      - "trust.cert-manager.io"
+    resources:
+      - "bundles"
+    verbs: ["get", "list", "watch"]
 
-# Permissions to update finalizers are required for trust-manager to work correctly
-# on OpenShift, even though we don't directly use finalizers at the time of writing
-- apiGroups:
-  - "trust.cert-manager.io"
-  resources:
-  - "bundles/finalizers"
-  verbs: ["update"]
+  # Permissions to update finalizers are required for trust-manager to work correctly
+  # on OpenShift, even though we don't directly use finalizers at the time of writing
+  - apiGroups:
+      - "trust.cert-manager.io"
+    resources:
+      - "bundles/finalizers"
+    verbs: ["update"]
 
-- apiGroups:
-  - "trust.cert-manager.io"
-  resources:
-  - "bundles/status"
-  verbs: ["patch"]
+  - apiGroups:
+      - "trust.cert-manager.io"
+    resources:
+      - "bundles/status"
+    verbs: ["patch"]
 
-- apiGroups:
-  - ""
-  resources:
-  - "namespaces"
-  verbs: ["get", "list", "watch"]
-- apiGroups:
-  - ""
-  resources:
-  - "configmaps"
-  verbs: ["get","list","create","patch","watch","delete"]
+  - apiGroups:
+      - ""
+    resources:
+      - "namespaces"
+    verbs: ["get", "list", "watch"]
+  - apiGroups:
+      - ""
+    resources:
+      - "configmaps"
+    verbs: ["get", "list", "create", "patch", "watch", "delete"]
 
-- apiGroups:
-  - "" 
-  - "events.k8s.io"
-  resources:
-  - "events"
-  verbs: ["create","patch"]
-- apiGroups:
-  - ""
-  resources:
-  - "secrets"
-  verbs: ["get","list","watch"]
+  - apiGroups:
+      - ""
+      - "events.k8s.io"
+    resources:
+      - "events"
+    verbs: ["create", "patch"]
+  - apiGroups:
+      - ""
+    resources:
+      - "secrets"
+    verbs: ["get", "list", "watch"]
 
-- apiGroups:
-  - ""
-  resources:
-  - "secrets"
-  verbs: ["create","patch","delete"]
-  resourceNames:
+  - apiGroups:
+      - ""
+    resources:
+      - "secrets"
+    verbs: ["create", "patch", "delete"]
+    resourceNames:
 
-    - gitlab-runner-ca
+      - gitlab-runner-ca
 ---
 # Source: trust-manager/templates/clusterrolebinding.yaml
 kind: ClusterRoleBinding
@@ -634,9 +633,9 @@ roleRef:
   kind: ClusterRole
   name: trust-manager
 subjects:
-- kind: ServiceAccount
-  name: trust-manager
-  namespace: cert-manager
+  - kind: ServiceAccount
+    name: trust-manager
+    namespace: cert-manager
 ---
 # Source: trust-manager/templates/role.yaml
 kind: Role
@@ -651,14 +650,14 @@ metadata:
     app.kubernetes.io/version: v0.26.0
     helm.sh/chart: trust-manager-v0.26.0
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - "secrets"
-  verbs:
-  - "get"
-  - "list"
-  - "watch"
+  - apiGroups:
+      - ""
+    resources:
+      - "secrets"
+    verbs:
+      - "get"
+      - "list"
+      - "watch"
 
 ---
 # Source: trust-manager/templates/role.yaml
@@ -674,16 +673,16 @@ metadata:
     app.kubernetes.io/version: v0.26.0
     helm.sh/chart: trust-manager-v0.26.0
 rules:
-- apiGroups:
-  - "coordination.k8s.io"
-  resources:
-  - "leases"
-  verbs:
-  - "get"
-  - "create"
-  - "update"
-  - "watch"
-  - "list"
+  - apiGroups:
+      - "coordination.k8s.io"
+    resources:
+      - "leases"
+    verbs:
+      - "get"
+      - "create"
+      - "update"
+      - "watch"
+      - "list"
 ---
 # Source: trust-manager/templates/rolebinding.yaml
 kind: RoleBinding
@@ -702,9 +701,9 @@ roleRef:
   kind: Role
   name: trust-manager
 subjects:
-- kind: ServiceAccount
-  name: trust-manager
-  namespace: cert-manager
+  - kind: ServiceAccount
+    name: trust-manager
+    namespace: cert-manager
 
 ---
 # Source: trust-manager/templates/rolebinding.yaml
@@ -724,9 +723,9 @@ roleRef:
   kind: Role
   name: trust-manager:leaderelection
 subjects:
-- kind: ServiceAccount
-  name: trust-manager
-  namespace: cert-manager
+  - kind: ServiceAccount
+    name: trust-manager
+    namespace: cert-manager
 ---
 # Source: trust-manager/templates/metrics-service.yaml
 apiVersion: v1
@@ -776,7 +775,6 @@ spec:
   selector:
     app: trust-manager
 
-
 ---
 # Source: trust-manager/templates/deployment.yaml
 apiVersion: apps/v1
@@ -809,86 +807,85 @@ spec:
       serviceAccountName: trust-manager
       automountServiceAccountToken: true
       initContainers:
-      - name: cert-manager-package-debian
-        image: "quay.io/jetstack/trust-pkg-debian-trixie:20250419-deb13u1.1"
-        imagePullPolicy: IfNotPresent
-        args:
-          - "/copyandmaybepause"
-          - "/debian-package"
-          - "/packages"
-        volumeMounts:
-        - mountPath: /packages
-          name: packages
-          readOnly: false
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          seccompProfile:
-            type: RuntimeDefault
+        - name: cert-manager-package-debian
+          image: "quay.io/jetstack/trust-pkg-debian-trixie:20250419-deb13u1.1"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "/copyandmaybepause"
+            - "/debian-package"
+            - "/packages"
+          volumeMounts:
+            - mountPath: /packages
+              name: packages
+              readOnly: false
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
       containers:
-      - name: trust-manager
-        image: "quay.io/jetstack/trust-manager:v0.26.0"
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 6443
-          name: webhook # for the PodMonitor port field
-        - containerPort: 9402
-          name: metrics # for the PodMonitor port field
-        readinessProbe:
-          httpGet:
-            port: 6060
-            path: /readyz
-          initialDelaySeconds: 3
-          periodSeconds: 7
-        args:
-          - "--log-format=text"
-          - "--log-level=1"
-          - "--metrics-port=9402"
-          - "--readiness-probe-port=6060"
-          - "--readiness-probe-path=/readyz"
-          - "--leader-elect=true"
-          - "--leader-election-lease-duration=15s"
-          - "--leader-election-renew-deadline=10s"
+        - name: trust-manager
+          image: "quay.io/jetstack/trust-manager:v0.26.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6443
+              name: webhook # for the PodMonitor port field
+            - containerPort: 9402
+              name: metrics # for the PodMonitor port field
+          readinessProbe:
+            httpGet:
+              port: 6060
+              path: /readyz
+            initialDelaySeconds: 3
+            periodSeconds: 7
+          args:
+            - "--log-format=text"
+            - "--log-level=1"
+            - "--metrics-port=9402"
+            - "--readiness-probe-port=6060"
+            - "--readiness-probe-path=/readyz"
+            - "--leader-elect=true"
+            - "--leader-election-lease-duration=15s"
+            - "--leader-election-renew-deadline=10s"
             # trust
-          - "--trust-namespace=cert-manager"
+            - "--trust-namespace=cert-manager"
             # webhook
-          - "--webhook-host=0.0.0.0"
-          - "--webhook-port=6443"
-          - "--webhook-certificate-dir=/tls"
-          - "--default-package-location=/packages/cert-manager-package-debian.json"
-          - "--secret-targets-enabled=true"
-        volumeMounts:
-        - mountPath: /tls
-          name: tls
-          readOnly: true
-        - mountPath: /packages
-          name: packages
-          readOnly: true
-        resources:
-            {}
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          seccompProfile:
-            type: RuntimeDefault
+            - "--webhook-host=0.0.0.0"
+            - "--webhook-port=6443"
+            - "--webhook-certificate-dir=/tls"
+            - "--default-package-location=/packages/cert-manager-package-debian.json"
+            - "--secret-targets-enabled=true"
+          volumeMounts:
+            - mountPath: /tls
+              name: tls
+              readOnly: true
+            - mountPath: /packages
+              name: packages
+              readOnly: true
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
       nodeSelector:
         kubernetes.io/os: linux
       volumes:
-      - name: packages
-        emptyDir:
-          sizeLimit: 50M
-      - name: tls
-        secret:
-          defaultMode: 420
-          secretName: trust-manager-tls
+        - name: packages
+          emptyDir:
+            sizeLimit: 50M
+        - name: tls
+          secret:
+            defaultMode: 420
+            secretName: trust-manager-tls
 
 ---
 # Source: trust-manager/templates/webhook.yaml
@@ -944,7 +941,7 @@ metadata:
 spec:
   commonName: "trust-manager.cert-manager.svc"
   dnsNames:
-  - "trust-manager.cert-manager.svc"
+    - "trust-manager.cert-manager.svc"
   secretName: trust-manager-tls
   secretTemplate:
     annotations:
@@ -956,7 +953,6 @@ spec:
     name: trust-manager
     kind: Issuer
     group: cert-manager.io
-
 
 ---
 # Source: trust-manager/templates/certificate.yaml

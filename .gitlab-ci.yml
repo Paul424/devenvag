@@ -9,4 +9,4 @@ yamlfmt:
   rules:
     - changes: ["**/*.yaml", "**/*.yml", ".yamlfmt"]
   script:
-    - yamlfmt -lint .
+    - yamlfmt -lint 'environments/**/*.yaml' 'environments/**/*.yml'

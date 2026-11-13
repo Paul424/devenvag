@@ -1,4 +1,3 @@
----
 # The (upstream) source only for initial development for the bootstrapping
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository

@@ -91,7 +91,7 @@ prometheus:
 registry:
   enabled: false
 
-gitlab-runner: 
+gitlab-runner:
   install: false
 
 gitlab:

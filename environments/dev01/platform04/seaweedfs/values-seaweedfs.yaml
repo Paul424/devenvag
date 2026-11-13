@@ -41,5 +41,5 @@ admin:
     host: "admin.seaweedfs.dev.local"
     tls:
       - hosts:
-        - admin.seaweedfs.dev.local
+          - admin.seaweedfs.dev.local
         secretName: seaweedfs-tls
