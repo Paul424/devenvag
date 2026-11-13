@@ -1,13 +1,20 @@
-# ---
-# apiVersion: trust.cert-manager.io/v1alpha1
-# kind: Bundle
-# metadata:
-#   name: root-ca
-# spec:
-#   sources:
-#     - secret:
-#         name: root-ca
-#         key: tls.crt
-#   target:
-#     configMap:
-#       key: ca.crt
+# Expose the root-ca on a public endpoint so shell scripts can download the ca to push artifacts to Harbor
+---
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: harbor-root-ca
+spec:
+  sources:
+    - secret:
+        name: root-ca
+        key: tls.crt
+  target:
+    configMap:
+      key: ca.crt
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values:
+            - kube-public

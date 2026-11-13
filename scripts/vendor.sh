@@ -54,9 +54,9 @@ elif [[ "${1:-}" == "push-to-harbor" ]]; then
   #
 
   # Establish trust by refering to the root CA that Harbor is using (which is exposed to a public endpoint using trust-manager)
-  # mkdir -p $BASE/ca/harbor
-  # curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/root-ca \
-  #   | jq -r '.data["ca.crt"]' > $BASE/ca/harbor/ca.crt
+  mkdir -p $BASE/ca/harbor
+  curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/harbor-root-ca \
+    | jq -r '.data["ca.crt"]' > $BASE/ca/harbor/ca.crt
 
   while IFS= read -r -d '' manifest; do
     dir="$(dirname "$manifest")"
