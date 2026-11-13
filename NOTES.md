@@ -8,7 +8,6 @@
 De runner draait nu wel maar jobs falen omdat de image van harbor niet kan worden geladen. Trust probleem.
 
 
-
 [20261111]
 
 - push to gitlab werkt (maar let op; soms is de root-ca er niet, iets van de trust-manager).

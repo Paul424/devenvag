@@ -29,7 +29,7 @@ Jobs are used to setup harbor projects, gitlab repo / users and gitlab runners. 
 1. HA Gitlab /w dependencies
 2. Hardened images / scanning**
 3. Backups
-
+4. For the initial bootstrap i want to work aginst zot OCI (source as an artifact), but then how to continue making cycles? You really need to switch... but how to keep the bootstrap script idempotent?
 
 
 ## Prerequisites

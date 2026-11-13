@@ -1,5 +1,18 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Scoped to switch over all the oci refs to harbor
-resources: []
+# Switch over the Kustomizations from zot OCI to Gitlab / Harbor
+resources:
+  - ../env/
+
+patches:
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      kind: Kustomization
+      name: platform01
+    patch: |-
+      - op: replace
+        path: /spec/sourceRef
+        value:
+          kind: GitRepository
+          name: devenvag
