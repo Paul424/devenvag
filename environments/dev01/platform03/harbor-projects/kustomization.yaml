@@ -7,6 +7,7 @@ resources:
 - netshoot.yaml
 - sa.yaml
 - rbac.yaml
+- namespace-gitlab-runner.yaml
 
 images:
   # - name: nicolaka/netshoot

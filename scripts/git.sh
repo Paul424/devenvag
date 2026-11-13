@@ -11,7 +11,7 @@ if [[ "${1:-}" == "push-to-gitlab" ]]; then
 
   # Establish trust by refering to the root CA that Harbor is using (which is exposed to a public endpoint using trust-manager)
   mkdir -p $BASE/ca/gitlab
-  curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/root-ca \
+  curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/gitlab-root-ca \
     | jq -r '.data["ca.crt"]' > $BASE/ca/gitlab/ca.crt
   cat $BASE/ca/gitlab/ca.crt
   if ! git remote get-url gitlab >/dev/null 2>&1; then

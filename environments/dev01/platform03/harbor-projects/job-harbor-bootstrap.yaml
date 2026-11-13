@@ -84,7 +84,7 @@ spec:
               [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
               echo "secret set for robot id=$ID"
 
-              kubectl -n env create secret docker-registry harbor-pull \
+              kubectl -n gitlab-runner create secret docker-registry harbor-pull-creds \
                 --docker-server=harbor-core.harbor.svc.cluster.local \
                 --docker-username='robot$puller' \
                 --docker-password="$ROBOT_PULLER_SECRET" \

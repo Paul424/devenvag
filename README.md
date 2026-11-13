@@ -20,7 +20,9 @@ This is just a small test to setup an airgapped development environment with too
 
 3. Multi node setup would best be done using Ansible.
 
+**Jobs**
 
+Jobs are used to setup harbor projects, gitlab repo / users and gitlab runners. It would be much better to manage this using an operator.
 
 **HA Gitlab /w dependencies**
 
