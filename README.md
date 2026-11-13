@@ -94,3 +94,10 @@ Push the platform repo into gitlab, which kicks off any kustomization on top of 
 ```
 bash ./scripts/git.sh push-to-gitlab
 ```
+
+## Access
+
+1. [Traefik](https://traefik.dev.local/dashboard/#/)
+2. [Harbor (admin/admin)](https://harbor.dev.local/harbor/projects)
+3. [Seaweedfs (admin/admin)](https://admin.seaweedfs.dev.local/login)
+4. [Gitlab (root/a312!Pw*.z,)](https://gitlab.dev.local/)

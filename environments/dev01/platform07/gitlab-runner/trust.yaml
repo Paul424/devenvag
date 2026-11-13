@@ -1,3 +1,4 @@
+# Establish trust between the gitab-runner and the gitlab service
 apiVersion: trust.cert-manager.io/v1alpha1
 kind: Bundle
 metadata:
