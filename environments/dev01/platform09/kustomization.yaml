@@ -9,7 +9,7 @@ patches:
   - target:
       group: kustomize.toolkit.fluxcd.io
       kind: Kustomization
-      name: platform01
+      name: platform0[0-9]
     patch: |-
       - op: replace
         path: /spec/sourceRef
