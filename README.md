@@ -9,16 +9,18 @@ This is just a small test to setup an airgapped development environment with too
 **Bootstrap using local / private registry**
 
 1. Use [skopeo](https://github.com/podman-container-tools/skopeo) for prep'ing artifacts (charts / images) to disk and private registry
-2. [Zot registry](https://zotregistry.dev/v2.1.23/) for a temp. OCI compliant registry for images, charts and the initial bootstrap manifests (flux)
+2. [Zot registry](https://zotregistry.dev/v2.1.23/) for an OCI compliant registry for images, charts and the initial bootstrap manifests (flux)
 3. Minikube confs to ensure artifact loading from private registry
 
 *learnings*
 
-1. Zot using a docker container /w hostname defined by minicube (host.minikube.internal) only works in this single node setup.
+1. Zot using a docker container /w hostname defined by minicube (host.minikube.internal) only works in this single node setup. But it's also not relevant since minikube is only for this small demonstrator.
 
-    For a multi node cluster setup i would use a dedicated bootstrap machine which runs zot using a daemon and make it reachable through a dns server / netw routing.
+2. For a multi node cluster setup Ansible would be the best fit for peer-to-peer node level provisioning. Each node would run it's own zot registry, i.e. no complex LB / HA zot registry is required but at the same time bootstrap images should not be loaded from Harbor.
 
-2. A zot registry should not be temporarily but permanent but only for bootstrap images, where bootstrapping means up to the point where harbor is running and can take over.
+3. Multi node setup would best be done using Ansible.
+
+
 
 **HA Gitlab /w dependencies**
 
@@ -26,7 +28,7 @@ x
 
 **Hardened images / scanning**
 
-x
+todo
 
 ## Prerequisites
 

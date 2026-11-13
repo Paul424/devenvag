@@ -1,4 +1,4 @@
-# Establish trust between the flux controllers and the gitlab service
+# Establish trust between the flux controllers and the gitlap-bootstrap (job) and the gitlab service
 apiVersion: trust.cert-manager.io/v1alpha1
 kind: Bundle
 metadata:
@@ -16,7 +16,7 @@ spec:
         - key: kubernetes.io/metadata.name
           operator: In
           values:
-            # - gitlab
+            - gitlab
             # - gitlab-runner
             # - harbor
-            - flux-system
+            - flux
