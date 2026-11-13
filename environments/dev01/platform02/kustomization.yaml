@@ -4,4 +4,7 @@ kind: Kustomization
 resources:
 - harbor
 - ca.yaml
+- rbac.yaml
+- trust.yaml
+
 

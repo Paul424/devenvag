@@ -9,7 +9,7 @@ spec:
   interval: 10m
   url: oci://host.minikube.internal:5000/charts
   certSecretRef:
-    name: registry-zot-ca
+    name: root-ca
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository

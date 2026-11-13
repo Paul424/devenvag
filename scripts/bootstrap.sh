@@ -8,6 +8,12 @@ SOPS_KEY_NAME="dev.local"
 # Run a local zot registry for the bootstrap images and vendor images and charts
 #
 
+# Generate the root-ca (used by zot, keycloak, harbor and any service on the cluster)
+bash $BASE/scripts/generate-root-ca.sh
+
+# Generate a crt for zot
+bash $BASE/scripts/generate-zot-ca.sh
+
 # Load the zot image into the docker daemon
 skopeo copy dir:$BASE/artifacts/transfer/ghcr.io/project-zot/zot:v2.1.11 \
   docker-daemon:ghcr.io/project-zot/zot:v2.1.11
@@ -24,7 +30,7 @@ docker run --rm --detach \
     -v "$BASE/ca/zot:/etc/zot/tls:ro" \
     ghcr.io/project-zot/zot:v2.1.11
 
-until curl --fail --silent --cacert "$BASE/ca/zot/ca.crt" \
+until curl --fail --silent --cacert "$BASE/ca/root/ca.crt" \
     https://registry.dev.local:5000/v2/_catalog; do
   echo "Waiting for zot registry to be ready..."
   sleep 1
@@ -57,14 +63,14 @@ kubectl wait --for=condition=available --timeout "300s" -n flux "deployment/noti
 kubectl wait --for=condition=available --timeout "300s" -n flux "deployment/source-controller"
 
 # Publish the initial cluster configuration to the zot OCI registry
-SSL_CERT_FILE=$BASE/ca/zot/ca.crt flux push artifact oci://registry.dev.local:5000/platform/cluster:v1 \
+SSL_CERT_FILE=$BASE/ca/root/ca.crt flux push artifact oci://registry.dev.local:5000/platform/cluster:v1 \
   --path=./environments \
   --source="local" \
   --revision="v1"
 
 # Make the ca available to the source (controller)
-kubectl create secret generic registry-zot-ca -n env \
-    --from-file=ca.crt=$BASE/ca/zot/ca.crt \
+kubectl create secret generic root-ca -n env \
+    --from-file=ca.crt=$BASE/ca/root/ca.crt \
     --dry-run=client -o yaml | kubectl apply -f -
 
 # For temp / dev only first develop against the public repo, then later replace with OCI artifact
@@ -76,3 +82,12 @@ kubectl create secret generic private-git -n env \
 
 # The top level kustomizations (platform01, 02, etc...)
 kubectl apply -k $BASE/environments/dev01/env
+
+# Wait for cert-manager
+kubectl wait --for=create namespace/cert-manager --timeout "300s"
+kubectl wait --for=create --timeout "300s" -n cert-manager "deployment/cert-manager"
+
+kubectl create secret tls root-ca -n cert-manager \
+  --cert="$BASE/ca/root/ca.crt" \
+  --key="$BASE/ca/root/ca.key" \
+  --dry-run=client -o yaml | kubectl apply -f -

@@ -5,6 +5,10 @@
    MountVolume.SetUp failed for volume "projected-secrets" : secret "gitlab-runner-token" not found                                                                    │
 │   Warning  FailedMount  3s (x8 over 67s)   kubelet            MountVolume.SetUp failed for volume "custom-certs" : secret "gitlab-runner-ca" not found      
 
+De runner draait nu wel maar jobs falen omdat de image van harbor niet kan worden geladen. Trust probleem.
+
+
+
 [20261111]
 
 - push to gitlab werkt (maar let op; soms is de root-ca er niet, iets van de trust-manager).

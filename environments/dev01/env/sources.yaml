@@ -25,7 +25,7 @@ spec:
   ref:
     tag: v1
   certSecretRef:
-    name: registry-zot-ca
+    name: root-ca
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository

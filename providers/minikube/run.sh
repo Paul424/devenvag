@@ -4,17 +4,22 @@ set -euxo pipefail
 BASE=$(dirname $(dirname $(dirname $(realpath $0))))
 
 # Generate a self-signed CA certificate and private key for Keycloak
-bash $BASE/scripts/generate-keycloak-ca.sh
+# bash $BASE/scripts/generate-keycloak-ca.sh
+
+# Generate a self-signed CA certificate and private key for Harbor (for the node and containerd to trust the registry)
+# bash $BASE/scripts/generate-harbor-ca.sh
 
 # Move the crt into a fixed folder which is mounted into the control-plane container by default
 mkdir -p ~/.minikube/files/var/lib/minikube/certs
-cp $BASE/ca/keycloak/ca.crt ~/.minikube/files/var/lib/minikube/certs/keycloak-ca.crt
+# cp $BASE/ca/keycloak/ca.crt ~/.minikube/files/var/lib/minikube/certs/keycloak-ca.crt
+cp $BASE/ca/root/ca.crt ~/.minikube/files/var/lib/minikube/certs/root-ca.crt
 
 # Have kubelet trust the zot registry
 mkdir -p ~/.minikube/files/etc/containerd/certs.d/host.minikube.internal:5000
-cp $BASE/ca/zot/ca.crt ~/.minikube/files/etc/containerd/certs.d/host.minikube.internal:5000/ca.crt
+# cp $BASE/ca/zot/ca.crt ~/.minikube/files/etc/containerd/certs.d/host.minikube.internal:5000/ca.crt
+cp $BASE/ca/root/ca.crt ~/.minikube/files/etc/containerd/certs.d/host.minikube.internal:5000/ca.crt
 
-mkdir -p ~/.minikube/files/etc/containerd/certs.d/host.minikube.internal:5000
+# Have containerd within the minikube container trust the zot registry
 cat > ~/.minikube/files/etc/containerd/certs.d/host.minikube.internal:5000/hosts.toml <<'EOF'
 server = "https://host.minikube.internal:5000"
 
@@ -22,6 +27,19 @@ server = "https://host.minikube.internal:5000"
   capabilities = ["pull", "resolve"]
   override_path = true
   ca = "/etc/containerd/certs.d/host.minikube.internal:5000/ca.crt"
+EOF
+
+# Have kubelet trust the harbor registry
+mkdir -p ~/.minikube/files/etc/containerd/certs.d/harbor.dev.local
+cp $BASE/ca/root/ca.crt ~/.minikube/files/etc/containerd/certs.d/harbor.dev.local/ca.crt
+
+# Have containerd within the minikube container trust the harbor registry
+cat > ~/.minikube/files/etc/containerd/certs.d/harbor.dev.local/hosts.toml <<'EOF'
+server = "https://harbor.dev.local"
+
+[host."https://harbor.dev.local"]
+  capabilities = ["pull", "resolve"]
+  ca = "/etc/containerd/certs.d/harbor.dev.local/ca.crt"
 EOF
 
 minikube start \
@@ -39,7 +57,7 @@ minikube start \
     --extra-config=apiserver.oidc-username-claim=preferred_username \
     --extra-config=apiserver.oidc-username-prefix=- \
     --extra-config=apiserver.oidc-groups-claim=groups \
-    --extra-config=apiserver.oidc-ca-file=/var/lib/minikube/certs/keycloak-ca.crt
+    --extra-config=apiserver.oidc-ca-file=/var/lib/minikube/certs/root-ca.crt
 
 minikube ip
 

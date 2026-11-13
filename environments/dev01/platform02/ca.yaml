@@ -1,28 +1,37 @@
+---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: selfsigned-bootstrap
+  name: harbor-ca
 spec:
-  selfSigned: {}
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: root-ca
-  namespace: cert-manager
-spec:
-  isCA: true
-  commonName: Root CA
-  secretName: root-ca
-  duration: 87600h
-  privateKey:
-    algorithm: ECDSA
-    size: 256
-    rotationPolicy: Never
-  issuerRef:
-    name: selfsigned-bootstrap
-    kind: ClusterIssuer
-    group: cert-manager.io
+  ca:
+    secretName: harbor-ca
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: ClusterIssuer
+# metadata:
+#   name: selfsigned-bootstrap
+# spec:
+#   selfSigned: {}
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: root-ca
+#   namespace: cert-manager
+# spec:
+#   isCA: true
+#   commonName: Root CA
+#   secretName: root-ca
+#   duration: 87600h
+#   privateKey:
+#     algorithm: ECDSA
+#     size: 256
+#     rotationPolicy: Never
+#   issuerRef:
+#     name: selfsigned-bootstrap
+#     kind: ClusterIssuer
+#     group: cert-manager.io
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -31,41 +40,3 @@ metadata:
 spec:
   ca:
     secretName: root-ca
----
-apiVersion: trust.cert-manager.io/v1alpha1
-kind: Bundle
-metadata:
-  name: root-ca
-spec:
-  sources:
-    - secret:
-        name: root-ca
-        key: tls.crt
-  target:
-    configMap:
-      key: ca.crt
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: root-ca-reader
-  namespace: kube-public
-rules:
-  - apiGroups: [""]
-    resources: [configmaps]
-    resourceNames: [root-ca]
-    verbs: [get]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: root-ca-reader
-  namespace: kube-public
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: root-ca-reader
-subjects:
-  - apiGroup: rbac.authorization.k8s.io
-    kind: Group
-    name: system:unauthenticated
