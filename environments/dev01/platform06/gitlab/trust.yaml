@@ -1,4 +1,4 @@
-# Establish trust between the flux controllers and the gitlap-bootstrap (job) and the gitlab service
+# Establish trust between the flux controllers and the gitlap-bootstrap (job) and the gitlab service. And also expose the ca on the public endpoint so we can push to gitlab using a script
 apiVersion: trust.cert-manager.io/v1alpha1
 kind: Bundle
 metadata:
@@ -17,6 +17,5 @@ spec:
           operator: In
           values:
             - gitlab
-            # - gitlab-runner
-            # - harbor
             - flux
+            - kube-public

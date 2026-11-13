@@ -9,6 +9,7 @@ resources:
 - secrets
 - tls.yaml
 - trust.yaml
+- rbac.yaml
 
 configMapGenerator:
 - behavior: create
