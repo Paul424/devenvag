@@ -13,4 +13,4 @@ exclude:
   - "**/templates/**"
   - "**/*-enc.yaml"
   - "secrets/**"
-  - "job-*.yaml"
+  - "**/job-*.yaml"
