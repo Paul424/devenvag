@@ -31,6 +31,11 @@ spec:
                 secretKeyRef:
                   name: gitlab-pushr-user-secret
                   key: PASSWORD
+            - name: RUNNER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gitlab-runner-user-secret
+                  key: PASSWORD
           command:
             - /bin/sh
             - -c
@@ -44,9 +49,11 @@ spec:
               FLUXRSECRET=gitlab-fluxr-auth
               PUSHRUSER=pushr
               PUSHRSECRET=gitlab-pushr-auth
+              RUNNERUSER=runner
+              RUNNERSECRET=gitlab-runner-auth
 
-              if kubectl -n env get secret "$PUSHRSECRET" >/dev/null 2>&1; then
-                echo "secret $PUSHRSECRET exists, skip"; exit 0
+              if kubectl -n env get secret "$RUNNERSECRET" >/dev/null 2>&1; then
+                echo "secret $RUNNERSECRET exists, skip"; exit 0
               fi
 
               kubectl -n gitlab wait --for=condition=available deploy/gitlab-toolbox --timeout=3m
@@ -79,6 +86,7 @@ spec:
               api -X POST "$G/api/v4/projects/$GROUP%2F$REPO/protected_branches" \
                 -d '{"name":"main","push_access_level":30,"merge_access_level":30}'              
 
+              ###################################################################################
               # 4. local user fluxr
               UID_=$(api "$G/api/v4/users?username=$FLUXRUSER" | jq -r '.[0].id // empty')
               if [ -z "$UID_" ]; then
@@ -102,6 +110,7 @@ spec:
                 --from-file=ca.crt=/ca/ca.crt \
                 --dry-run=client -o yaml | kubectl apply -f -
 
+              ###################################################################################
               # 8. local user pushr
               UID_=$(api "$G/api/v4/users?username=$PUSHRUSER" | jq -r '.[0].id // empty')
               if [ -z "$UID_" ]; then
@@ -125,8 +134,26 @@ spec:
                 --from-file=ca.crt=/ca/ca.crt \
                 --dry-run=client -o yaml | kubectl apply -f -
 
-              # 12. bootstrap-token intrekken
+              ###################################################################################
+              # 12. local user runner
+              UID_=$(api "$G/api/v4/users?username=$RUNNERUSER" | jq -r '.[0].id // empty')
+              if [ -z "$UID_" ]; then
+                UID_=$(api -X POST "$G/api/v4/users" -d "$(jq -nc --arg p "$RUNNER_PASSWORD" \
+                  '{name:"Push",username:"runner",email:"runner@dev.local",password:$p,skip_confirmation:true,can_create_group:false}')" | jq -r .id)
+              fi
+              [ -n "$UID_" ] && [ "$UID_" != null ] || { echo "Failed to create user"; exit 1; }
+
+              # 13. rechten: 40 = Maintainer (nodig voor aanmaken van tags)
+              api -X POST "$G/api/v4/groups/$GID/members" -d "{\"user_id\":$UID_,\"access_level\":40}" >/dev/null || true
+
+              # 14. PAT aanmaken (maximaal 365 dagen geldig)
+              EXP=$(date -u -d "@$(( $(date +%s) + 364*86400 ))" +%F)
+              TOKEN=$(api -X POST "$G/api/v4/users/$UID_/personal_access_tokens" \
+                -d "{\"name\":\"runner\",\"scopes\":[\"api\",\"read_repository\",\"write_repository\"],\"expires_at\":\"$EXP\"}" | jq -r .token)
+              [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "Failed to create PAT"; exit 1; }
+
+              # 15. bootstrap-token intrekken
               api -X DELETE "$G/api/v4/personal_access_tokens/self" -o /dev/null
               
-              # 13. summary
-              echo "ready: $GROUP/$REPO, users $FLUXRUSER $PUSHRUSER, expiry $EXP"
+              # 16. summary
+              echo "ready: $GROUP/$REPO, users $FLUXRUSER $PUSHRUSER $RUNNERUSER, expiry $EXP"
