@@ -16,6 +16,7 @@ docker.io:
     redis: ["7.2.17"]
     alpine/k8s: ["1.34.1"]
     alpine: ["3.22"]
+    orhunp/git-cliff: ["2.14.2"]
 
 registry.gitlab.com:
   images:

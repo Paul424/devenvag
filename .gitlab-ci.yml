@@ -1,5 +1,6 @@
 stages:
   - lint
+  - release
 
 yamlfmt:
   stage: lint
@@ -10,3 +11,39 @@ yamlfmt:
     - changes: ["**/*.yaml", "**/*.yml", ".yamlfmt"]
   script:
     - yamlfmt -lint 'environments/**/*.yaml' 'environments/**/*.yml'
+
+debug-tls:
+  stage: release
+  image: harbor.dev.local/docker.io/orhunp/git-cliff:2.14.2
+  script:
+    - curl -sSI https://gitlab.dev.local/ | head -1
+
+changelog:
+  stage: release
+  image:
+    name: harbor.dev.local/docker.io/orhunp/git-cliff:2.14.2
+    entrypoint: [""]
+  variables:
+    GITLAB_API_URL=http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/api/v4
+    GITLAB_TOKEN: $GL_TOKEN
+    GITLAB_REPO: $CI_PROJECT_PATH  
+    GIT_STRATEGY: clone
+    GIT_DEPTH: 0
+  # before_script:
+  #   - mkdir -p /usr/local/share/ca-certificates/
+  #   - cp "$CI_SERVER_TLS_CA_FILE" /usr/local/share/ca-certificates/gitlab-ca.crt
+  #   - update-ca-certificates
+  script:
+    - git-cliff --use-native-tls -c gitlab -r . > CHANGELOG.md
+  artifacts:
+    paths:
+      - CHANGELOG.md
+
+
+
+
+# GITLAB_API_URL: $CI_API_V4_URL
+# 
+# before_script:
+#   - cp "$CI_SERVER_TLS_CA_FILE" /usr/local/share/ca-certificates/airgap.crt && update-ca-certificates
+# 
