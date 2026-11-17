@@ -152,8 +152,14 @@ spec:
                 -d "{\"name\":\"runner\",\"scopes\":[\"api\",\"read_repository\",\"write_repository\"],\"expires_at\":\"$EXP\"}" | jq -r .token)
               [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "Failed to create PAT"; exit 1; }
 
-              # 15. bootstrap-token intrekken
+              # 15. secret voor Runner (basic auth + CA)
+              kubectl -n gitlab-runner create secret generic "$RUNNERSECRET" \
+                --from-literal=username="$RUNNERUSER" --from-literal=password="$TOKEN" \
+                --from-file=ca.crt=/ca/ca.crt \
+                --dry-run=client -o yaml | kubectl apply -f -
+
+              # 16. bootstrap-token intrekken
               api -X DELETE "$G/api/v4/personal_access_tokens/self" -o /dev/null
               
-              # 16. summary
+              # 17. summary
               echo "ready: $GROUP/$REPO, users $FLUXRUSER $PUSHRUSER $RUNNERUSER, expiry $EXP"

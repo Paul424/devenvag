@@ -1,5 +1,20 @@
 # Notes
 
+[20261117]
+
+docker run -it -v /home/pbox/projects/devenvag:/prj orhunp/git-cliff:2.14.2 --use-native-tls -c gitlab -r /prj
+INFO  git_cliff > Using built-in configuration file: gitlab
+## What's Changed
+* chore: switch all kusts by @Paul424
+* feat: first test switcher by @Paul424
+* chore: fmt by @Paul424
+* fix: job image by @Paul424
+* fix: harbor pull secret by @Paul424
+
+GITLAB_API_URL
+GITLAB_TOKEN
+
+
 [20261112]
 
    MountVolume.SetUp failed for volume "projected-secrets" : secret "gitlab-runner-token" not found                                                                    │
