@@ -1,0 +1,23 @@
+apiVersion: pkg.crossplane.io/v1beta1
+kind: DeploymentRuntimeConfig
+metadata:
+  name: root-ca-trust
+spec:
+  deploymentTemplate:
+    spec:
+      selector: {}
+      template:
+        spec:
+          containers:
+            - name: package-runtime
+              env:
+                - name: SSL_CERT_FILE
+                  value: /certs/ca.crt
+              volumeMounts:
+                - name: ca
+                  mountPath: /certs
+                  readOnly: true
+          volumes:
+            - name: ca
+              configMap:
+                name: crossplane-root-ca

@@ -91,6 +91,11 @@ spec:
       kind: Job
       name: harbor-bootstrap
       namespace: harbor
+  healthCheckExprs:
+    - apiVersion: pkg.crossplane.io/v1
+      kind: Provider
+      current: status.conditions.exists(c, c.type == 'Healthy' && c.status == 'True')
+      failed: status.conditions.exists(c, c.type == 'Healthy' && c.status == 'False')      
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
