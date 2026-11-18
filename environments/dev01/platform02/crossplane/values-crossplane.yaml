@@ -1,2 +1,6 @@
 image:
   repository: host.minikube.internal:5000/xpkg.crossplane.io/crossplane/crossplane
+
+registryCaBundleConfig:
+  name: crossplane-root-ca
+  key: ca.crt
