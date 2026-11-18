@@ -1,0 +1,17 @@
+---
+apiVersion: harbor.crossplane.io/v1alpha1
+kind: Project
+metadata:
+  name: foobar
+spec:
+  deletionPolicy: Delete
+  providerConfigRef:
+    name: default
+  forProvider:
+    name: foobar
+    autoSbomGeneration: true
+    enableContentTrust: true
+    enableContentTrustCosign: false
+    public: false
+    vulnerabilityScanner: Trivy
+    vulnerabilityScanning: false
