@@ -82,3 +82,7 @@ quay.io:
     jetstack/cert-manager-cainjector: ["v1.20.3"]
     jetstack/trust-pkg-debian-trixie: ["20250419-deb13u1.1"]
     jetstack/trust-manager: ["v0.26.0"]
+
+xpkg.crossplane.io:
+  images:
+    crossplane/crossplane: ["v2.4.3"]

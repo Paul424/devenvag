@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - harbor
+  - crossplane
   - ca.yaml
   - rbac.yaml
   - trust.yaml
-
