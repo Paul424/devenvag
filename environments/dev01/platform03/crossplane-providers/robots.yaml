@@ -1,0 +1,46 @@
+---
+apiVersion: robot.harbor.crossplane.io/v1alpha1
+kind: Account
+metadata:
+  name: pusher
+spec:
+  providerConfigRef:
+    name: default
+  forProvider:
+    name: pusher
+    level: system
+    duration: -1
+    permissions:
+      - kind: project
+        namespace: "*"
+        access:
+          - action: push
+            resource: repository
+          - action: pull
+            resource: repository
+    secretSecretRef:
+      namespace: crossplane
+      name: harbor-robot-pusher-secret
+      key: SECRET
+---
+apiVersion: robot.harbor.crossplane.io/v1alpha1
+kind: Account
+metadata:
+  name: puller
+spec:
+  providerConfigRef:
+    name: default
+  forProvider:
+    name: puller
+    level: system
+    duration: -1
+    permissions:
+      - kind: project
+        namespace: "*"
+        access:
+          - action: pull
+            resource: repository
+    secretSecretRef:
+      namespace: crossplane
+      name: harbor-robot-puller-secret
+      key: SECRET
