@@ -4,6 +4,11 @@
 
 │   Get "https://gitlab.dev.local/api/v4/projects/platform%2Fdevenvag/releases/0%2E1%2E0": tls: failed to verify                                                                                                         certificate: x509: certificate signed by unknown authority.
 
+crossplane:
+
+cannot initialize the Terraform plugin SDK async external client: cannot get terraform setup: cannot resolve provider c │
+│ onfig: cannot get referenced ProviderConfig: ProviderConfig.harbor.crossplane.io "default" not found
+
 
 [20261117]
 

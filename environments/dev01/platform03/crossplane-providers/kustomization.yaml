@@ -5,6 +5,7 @@ resources:
   - secrets
   - trust.yaml
   - providers.yaml
+  - provider-config.yaml
   - projects.yaml
 
 transformers:
