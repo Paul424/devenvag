@@ -1,5 +1,10 @@
 # Notes
 
+[20261118]
+
+│   Get "https://gitlab.dev.local/api/v4/projects/platform%2Fdevenvag/releases/0%2E1%2E0": tls: failed to verify                                                                                                         certificate: x509: certificate signed by unknown authority.
+
+
 [20261117]
 
 docker run -it -v /home/pbox/projects/devenvag:/prj orhunp/git-cliff:2.14.2 --use-native-tls -c gitlab -r /prj
