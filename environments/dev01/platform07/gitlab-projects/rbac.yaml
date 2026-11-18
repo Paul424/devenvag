@@ -96,4 +96,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: gitlab-bootstrap
-    namespace: gitlab-runner
+    namespace: gitlab
