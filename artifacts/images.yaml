@@ -33,6 +33,7 @@ registry.gitlab.com:
     gitlab-org/build/cng/gitlab-webservice-ce: ["v19.5.3"]
     gitlab-org/gitlab-runner: ["alpine-v19.5.3"]
     gitlab-org/gitlab-runner/gitlab-runner-helper: ["x86_64-v19.5.3"]
+    gitlab-org/cli: ["v1.131.0"]
 
 ghcr.io:
   images:

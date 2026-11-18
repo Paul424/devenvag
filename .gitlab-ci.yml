@@ -12,12 +12,6 @@ yamlfmt:
   script:
     - yamlfmt -lint 'environments/**/*.yaml' 'environments/**/*.yml'
 
-debug-tls:
-  stage: release
-  image: harbor.dev.local/docker.io/orhunp/git-cliff:2.14.2
-  script:
-    - curl -sSI https://gitlab.dev.local/ | head -1
-
 changelog:
   stage: release
   image:
@@ -31,21 +25,34 @@ changelog:
     GITLAB_REPO: $CI_PROJECT_PATH  
     GIT_STRATEGY: clone
     GIT_DEPTH: 0
-  # before_script:
-  #   - mkdir -p /usr/local/share/ca-certificates/
-  #   - cp "$CI_SERVER_TLS_CA_FILE" /usr/local/share/ca-certificates/gitlab-ca.crt
-  #   - update-ca-certificates
   script:
-    - git-cliff --use-native-tls -c gitlab -r . > CHANGELOG.md
+    - NEXT=$(git-cliff --use-native-tls -c gitlab -r . --bumped-version)
+    - echo "NEXT_VERSION=$NEXT" > build.env
+    - git-cliff --use-native-tls -c gitlab -r . --bump > CHANGELOG.md
+    - git-cliff --use-native-tls -c gitlab -r . --unreleased --bump --strip header > RELEASE_NOTES.md
   artifacts:
     paths:
       - CHANGELOG.md
+      - RELEASE_NOTES.md
+    reports:
+      dotenv: build.env
 
-
-
-
-# GITLAB_API_URL: $CI_API_V4_URL
-# 
-# before_script:
-#   - cp "$CI_SERVER_TLS_CA_FILE" /usr/local/share/ca-certificates/airgap.crt && update-ca-certificates
-# 
+release:
+  stage: release
+  image:
+    name: harbor.dev.local/registry.gitlab.com/gitlab-org/cli:v1.131.0
+  needs:
+    - job: changelog
+      artifacts: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual
+      allow_failure: true
+  variables:
+    ADDITIONAL_CA_CERT_BUNDLE: $CI_SERVER_TLS_CA_FILE
+  script:
+    - echo "release $NEXT_VERSION"
+  release:
+    tag_name: $NEXT_VERSION
+    name: 'Release $NEXT_VERSION'
+    description: './RELEASE_NOTES.md'
