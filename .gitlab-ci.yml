@@ -56,9 +56,3 @@ release:
     tag_name: $NEXT_VERSION
     name: 'Release $NEXT_VERSION'
     description: './RELEASE_NOTES.md'
-
-
-    # ADDITIONAL_CA_CERT_BUNDLE: $CI_SERVER_TLS_CA_FILE
-
-  # before_script:
-  #   - export ADDITIONAL_CA_CERT_BUNDLE="$(cat "$CI_SERVER_TLS_CA_FILE")"
