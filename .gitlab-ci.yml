@@ -56,13 +56,9 @@ release:
     - 'echo "CI_SERVER_TLS_CA_FILE: ${CI_SERVER_TLS_CA_FILE:-leeg}"'
     - 'echo "ADDITIONAL_CA_CERT_BUNDLE: ${ADDITIONAL_CA_CERT_BUNDLE:-leeg}"'
     - 'ls -l "$ADDITIONAL_CA_CERT_BUNDLE" 2>&1 | head -1'  
+    - 'cat $ADDITIONAL_CA_CERT_BUNDLE'
     - echo "release $NEXT_VERSION"
   release:
     tag_name: $NEXT_VERSION
     name: 'Release $NEXT_VERSION'
     description: './RELEASE_NOTES.md'
-
-
-# before_script:
-#   - cp "$CI_SERVER_TLS_CA_FILE" /usr/local/share/ca-certificates/airgap.crt && update-ca-certificates
-
