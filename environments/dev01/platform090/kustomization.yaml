@@ -5,14 +5,14 @@ kind: Kustomization
 resources:
   - ../env/
 
-patches:
-  - target:
-      group: kustomize.toolkit.fluxcd.io
-      kind: Kustomization
-      name: platform0[0-9][0-9]
-    patch: |-
-      - op: replace
-        path: /spec/sourceRef
-        value:
-          kind: GitRepository
-          name: devenvag
+# patches:
+#   - target:
+#       group: kustomize.toolkit.fluxcd.io
+#       kind: Kustomization
+#       name: platform0[0-9][0-9]
+#     patch: |-
+#       - op: replace
+#         path: /spec/sourceRef
+#         value:
+#           kind: GitRepository
+#           name: devenvag
