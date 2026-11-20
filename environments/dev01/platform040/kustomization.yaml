@@ -5,5 +5,5 @@ resources:
   - pg # operator
   - seaweedfs
   - redis
-  - crossplane-projects
+  - crossplane-harbor-projects
   - namespace.yaml

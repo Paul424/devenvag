@@ -11,6 +11,7 @@ spec:
           containers:
             - name: package-runtime
               env:
+                # Only required when connecting to gitlab over https (https://gitlab.dev.local)
                 - name: SSL_CERT_FILE
                   value: /certs/ca.crt
               volumeMounts:

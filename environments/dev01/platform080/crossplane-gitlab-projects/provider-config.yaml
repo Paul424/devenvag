@@ -1,0 +1,12 @@
+apiVersion: harbor.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  url: http://harbor-core.harbor.svc.cluster.local
+  credentials:
+    source: Secret
+    secretRef:
+      name: harbor-credentials
+      namespace: crossplane
+      key: credentials
