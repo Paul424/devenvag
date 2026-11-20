@@ -1,0 +1,17 @@
+apiVersion: projects.gitlab.crossplane.io/v1alpha1
+kind: Project
+metadata:
+  name: devenvag
+spec:
+  deletionPolicy: Orphan
+  providerConfigRef:
+    name: gitlab
+  forProvider:
+    name: devenvag
+    path: devenvag
+    namespaceIdRef:
+      name: platform  # Ref to group
+    visibility: private
+    initializeWithReadme: false
+    defaultBranch: main
+    description: Gitops repo for devenvag

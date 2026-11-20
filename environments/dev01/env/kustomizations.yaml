@@ -193,16 +193,39 @@ spec:
       name: sops-gpg
   dependsOn:
     - name: platform060
-  # healthChecks:
-  #   - apiVersion: batch/v1
-  #     kind: Job
-  #     name: gitlab-bootstrap
-  #     namespace: gitlab
+  healthChecks:
+    - apiVersion: batch/v1
+      kind: Job
+      name: gitlab-pat
+      namespace: gitlab
   healthCheckExprs:
     - apiVersion: pkg.crossplane.io/v1
       kind: Provider
       current: status.conditions.exists(c, c.type == 'Healthy' && c.status == 'True')
       failed: status.conditions.exists(c, c.type == 'Healthy' && c.status == 'False')
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: platform080
+  namespace: env
+spec:
+  interval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: devenvag-bootstrap
+  # sourceRef:
+  #   kind: OCIRepository
+  #   name: devenvag
+  path: ./environments/dev01/platform080/
+  prune: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-gpg
+  dependsOn:
+    - name: platform070
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -224,7 +247,7 @@ spec:
     secretRef:
       name: sops-gpg
   dependsOn:
-    - name: platform070
+    - name: platform080
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

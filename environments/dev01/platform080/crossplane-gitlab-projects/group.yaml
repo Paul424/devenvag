@@ -1,0 +1,12 @@
+apiVersion: groups.gitlab.crossplane.io/v1alpha1
+kind: Group
+metadata:
+  name: platform
+spec:
+  deletionPolicy: Orphan
+  providerConfigRef:
+    name: gitlab
+  forProvider:
+    path: platform
+    name: platform
+    visibility: private
