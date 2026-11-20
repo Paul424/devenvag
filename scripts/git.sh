@@ -21,6 +21,6 @@ if [[ "${1:-}" == "push-to-gitlab" ]]; then
   git config credential.https://gitlab.dev.local.username pushr
   # git config credential.helper 'cache --timeout=28800'
   git -c credential.helper= \
-    -c "credential.helper=!f() { echo username=pushr; echo password=$(kubectl -n env get secret gitlab-pushr-auth -o jsonpath='{.data.password}' | base64 -d); }; f" \
+    -c "credential.helper=!f() { echo username=pushr; echo password=$(kubectl -n crossplane get secret gitlab-pusher-token -o jsonpath='{.data.token}' | base64 -d); }; f" \
     push gitlab main
 fi

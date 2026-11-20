@@ -3,12 +3,11 @@ kind: Kustomization
 
 resources:
   - secrets
+  - eso
   - provider-config.yaml
   - group.yaml
   - project.yaml
   - access-token.yaml
-  - secret-store.yaml
-  - external-secret.yaml
 
 transformers:
   - |-
