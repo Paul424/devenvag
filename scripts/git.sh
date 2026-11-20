@@ -13,7 +13,7 @@ if [[ "${1:-}" == "push-to-gitlab" ]]; then
   mkdir -p $BASE/ca/gitlab
   curl -sk https://192.168.49.2:8443/api/v1/namespaces/kube-public/configmaps/gitlab-root-ca \
     | jq -r '.data["ca.crt"]' > $BASE/ca/gitlab/ca.crt
-  cat $BASE/ca/gitlab/ca.crt
+  # cat $BASE/ca/gitlab/ca.crt
   if ! git remote get-url gitlab >/dev/null 2>&1; then
     git remote add gitlab https://gitlab.dev.local/platform/devenvag.git
   fi

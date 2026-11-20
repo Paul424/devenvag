@@ -1,92 +1,94 @@
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: harbor-bootstrap
-  namespace: harbor
-spec:
-  backoffLimit: 3
-  template:
-    spec:
-      serviceAccountName: harbor-bootstrap
-      restartPolicy: OnFailure
-      containers:
-        - name: bootstrap
-          image: docker.io/alpine/k8s:1.34.1
-          env:
-            - name: PASS
-              valueFrom:
-                secretKeyRef:
-                  name: harbor-admin-password
-                  key: HARBOR_ADMIN_PASSWORD
-            - name: ROBOT_PUSHER_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: harbor-robot-pusher-secret
-                  key: SECRET
-            - name: ROBOT_PULLER_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: harbor-robot-puller-secret
-                  key: SECRET
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              set -euxo
-              HARBOR_URL=http://harbor-core.harbor.svc.cluster.local
-              ROBOT_PUSHER=pusher
-              FULLNAME_PUSHER='robot$pusher'
-              ROBOT_PULLER=puller
-              FULLNAME_PULLER='robot$puller'
+# Job has been replaced with crossplane harbor provider
 
-              # code-only (POST/PATCH)
-              call() { # method path body
-                curl -s -o /dev/null -w '%{http_code}' -u "admin:$PASS" \
-                  -H 'Content-Type: application/json' -X "$1" "$HARBOR_URL$2" -d "$3"
-              }
-              # body terug (GET)
-              get() { curl -sf -u "admin:$PASS" "$HARBOR_URL$1"; }
-              ok() { case "$1" in 200|201|409) echo "$2: ok ($1)";; *) echo "$2: failed ($1)"; exit 1;; esac; }
+# apiVersion: batch/v1
+# kind: Job
+# metadata:
+#   name: harbor-bootstrap
+#   namespace: harbor
+# spec:
+#   backoffLimit: 3
+#   template:
+#     spec:
+#       serviceAccountName: harbor-bootstrap
+#       restartPolicy: OnFailure
+#       containers:
+#         - name: bootstrap
+#           image: docker.io/alpine/k8s:1.34.1
+#           env:
+#             - name: PASS
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: harbor-admin-password
+#                   key: HARBOR_ADMIN_PASSWORD
+#             - name: ROBOT_PUSHER_SECRET
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: harbor-robot-pusher-secret
+#                   key: SECRET
+#             - name: ROBOT_PULLER_SECRET
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: harbor-robot-puller-secret
+#                   key: SECRET
+#           command: ["/bin/sh", "-c"]
+#           args:
+#             - |
+#               set -euxo
+#               HARBOR_URL=http://harbor-core.harbor.svc.cluster.local
+#               ROBOT_PUSHER=pusher
+#               FULLNAME_PUSHER='robot$pusher'
+#               ROBOT_PULLER=puller
+#               FULLNAME_PULLER='robot$puller'
 
-              for p in registry.k8s.io gcr.io quay.io ghcr.io docker.io registry.gitlab.com charts; do
-                ok "$(call POST /api/v2.0/projects "{\"project_name\":\"$p\",\"public\":false}")" "project $p"
-              done
+#               # code-only (POST/PATCH)
+#               call() { # method path body
+#                 curl -s -o /dev/null -w '%{http_code}' -u "admin:$PASS" \
+#                   -H 'Content-Type: application/json' -X "$1" "$HARBOR_URL$2" -d "$3"
+#               }
+#               # body terug (GET)
+#               get() { curl -sf -u "admin:$PASS" "$HARBOR_URL$1"; }
+#               ok() { case "$1" in 200|201|409) echo "$2: ok ($1)";; *) echo "$2: failed ($1)"; exit 1;; esac; }
 
-              # robot aanmaken zonder secret (409 = bestaat al)
-              ok "$(call POST /api/v2.0/robots '{
-                "name":"'"$ROBOT_PUSHER"'","level":"system","duration":-1,
-                "permissions":[{"kind":"project","namespace":"*",
-                  "access":[{"resource":"repository","action":"push"},
-                            {"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PUSHER"
+#               for p in registry.k8s.io gcr.io quay.io ghcr.io docker.io registry.gitlab.com charts; do
+#                 ok "$(call POST /api/v2.0/projects "{\"project_name\":\"$p\",\"public\":false}")" "project $p"
+#               done
 
-              ID=$(get "/api/v2.0/robots?q=name=pusher&page_size=100" \
-                | jq -r --arg n "$FULLNAME_PUSHER" '.[] | select(.name==$n) | .id' | head -1)
-              [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
+#               # robot aanmaken zonder secret (409 = bestaat al)
+#               ok "$(call POST /api/v2.0/robots '{
+#                 "name":"'"$ROBOT_PUSHER"'","level":"system","duration":-1,
+#                 "permissions":[{"kind":"project","namespace":"*",
+#                   "access":[{"resource":"repository","action":"push"},
+#                             {"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PUSHER"
 
-              # secret expliciet zetten; 200 is het enige geldige resultaat
-              BODY=$(jq -nc --arg s "$ROBOT_PUSHER_SECRET" '{secret:$s}')
-              code=$(call PATCH "/api/v2.0/robots/$ID" "$BODY")
-              [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
-              echo "secret set for robot id=$ID"
+#               ID=$(get "/api/v2.0/robots?q=name=pusher&page_size=100" \
+#                 | jq -r --arg n "$FULLNAME_PUSHER" '.[] | select(.name==$n) | .id' | head -1)
+#               [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
 
-              # robot aanmaken zonder secret (409 = bestaat al)
-              ok "$(call POST /api/v2.0/robots '{
-                "name":"'"$ROBOT_PULLER"'","level":"system","duration":-1,
-                "permissions":[{"kind":"project","namespace":"*",
-                  "access":[{"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PULLER"
+#               # secret expliciet zetten; 200 is het enige geldige resultaat
+#               BODY=$(jq -nc --arg s "$ROBOT_PUSHER_SECRET" '{secret:$s}')
+#               code=$(call PATCH "/api/v2.0/robots/$ID" "$BODY")
+#               [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
+#               echo "secret set for robot id=$ID"
 
-              ID=$(get "/api/v2.0/robots?q=name=puller&page_size=100" \
-                | jq -r --arg n "$FULLNAME_PULLER" '.[] | select(.name==$n) | .id' | head -1)
-              [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
+#               # robot aanmaken zonder secret (409 = bestaat al)
+#               ok "$(call POST /api/v2.0/robots '{
+#                 "name":"'"$ROBOT_PULLER"'","level":"system","duration":-1,
+#                 "permissions":[{"kind":"project","namespace":"*",
+#                   "access":[{"resource":"repository","action":"pull"}]}]}')" "robot $ROBOT_PULLER"
 
-              # secret expliciet zetten; 200 is het enige geldige resultaat
-              BODY=$(jq -nc --arg s "$ROBOT_PULLER_SECRET" '{secret:$s}')
-              code=$(call PATCH "/api/v2.0/robots/$ID" "$BODY")
-              [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
-              echo "secret set for robot id=$ID"
+#               ID=$(get "/api/v2.0/robots?q=name=puller&page_size=100" \
+#                 | jq -r --arg n "$FULLNAME_PULLER" '.[] | select(.name==$n) | .id' | head -1)
+#               [ -n "$ID" ] || { echo "robot-id not found"; exit 1; }
 
-              kubectl -n gitlab-runner create secret docker-registry harbor-pull-creds \
-                --docker-server=harbor.dev.local \
-                --docker-username='robot$puller' \
-                --docker-password="$ROBOT_PULLER_SECRET" \
-                --dry-run=client -o yaml | kubectl apply -f -
-              echo "dockerconfig created for puller"
+#               # secret expliciet zetten; 200 is het enige geldige resultaat
+#               BODY=$(jq -nc --arg s "$ROBOT_PULLER_SECRET" '{secret:$s}')
+#               code=$(call PATCH "/api/v2.0/robots/$ID" "$BODY")
+#               [ "$code" = 200 ] || { echo "failed to set secret: ($code)"; exit 1; }
+#               echo "secret set for robot id=$ID"
+
+#               kubectl -n gitlab-runner create secret docker-registry harbor-pull-creds \
+#                 --docker-server=harbor.dev.local \
+#                 --docker-username='robot$puller' \
+#                 --docker-password="$ROBOT_PULLER_SECRET" \
+#                 --dry-run=client -o yaml | kubectl apply -f -
+#               echo "dockerconfig created for puller"

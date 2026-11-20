@@ -1,5 +1,12 @@
 # Notes
 
+[20261120]
+- de skopeo sync naar Harbor zou ik het liefst vanuit het cluster doen; dwz een sync van zot naar harbor, maar de vraag is of het kan? skopeo gebruik disk als source.
+- 
+
+[20261119]
+NEDs
+
 [20261118]
 
 │   Get "https://gitlab.dev.local/api/v4/projects/platform%2Fdevenvag/releases/0%2E1%2E0": tls: failed to verify                                                                                                         certificate: x509: certificate signed by unknown authority.

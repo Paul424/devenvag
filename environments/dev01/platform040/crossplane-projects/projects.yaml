@@ -10,7 +10,7 @@ spec:
   forProvider:
     name: registry.k8s.io
     autoSbomGeneration: true
-    enableContentTrust: true
+    enableContentTrust: false  # Otherwise Gitlab runners get a 412 Precondition Failed when loading image
     enableContentTrustCosign: false
     public: false
     vulnerabilityScanner: Trivy
@@ -27,7 +27,7 @@ spec:
   forProvider:
     name: gcr.io
     autoSbomGeneration: true
-    enableContentTrust: true
+    enableContentTrust: false
     enableContentTrustCosign: false
     public: false
     vulnerabilityScanner: Trivy
@@ -44,7 +44,7 @@ spec:
   forProvider:
     name: quay.io
     autoSbomGeneration: true
-    enableContentTrust: true
+    enableContentTrust: false
     enableContentTrustCosign: false
     public: false
     vulnerabilityScanner: Trivy
@@ -61,7 +61,7 @@ spec:
   forProvider:
     name: ghcr.io
     autoSbomGeneration: true
-    enableContentTrust: true
+    enableContentTrust: false
     enableContentTrustCosign: false
     public: false
     vulnerabilityScanner: Trivy
@@ -78,7 +78,7 @@ spec:
   forProvider:
     name: docker.io
     autoSbomGeneration: true
-    enableContentTrust: true
+    enableContentTrust: false
     enableContentTrustCosign: false
     public: false
     vulnerabilityScanner: Trivy
@@ -95,7 +95,7 @@ spec:
   forProvider:
     name: registry.gitlab.com
     autoSbomGeneration: true
-    enableContentTrust: true
+    enableContentTrust: false
     enableContentTrustCosign: false
     public: false
     vulnerabilityScanner: Trivy
@@ -112,7 +112,7 @@ spec:
   forProvider:
     name: xpkg.crossplane.io
     autoSbomGeneration: true
-    enableContentTrust: true
+    enableContentTrust: false
     enableContentTrustCosign: false
     public: false
     vulnerabilityScanner: Trivy
@@ -129,7 +129,7 @@ spec:
   forProvider:
     name: charts
     autoSbomGeneration: true
-    enableContentTrust: true
+    enableContentTrust: false  # Helm push yields an error when setting to true: response status code 412: projectpolicyviolation: The image is not signed by notation.
     enableContentTrustCosign: false
     public: false
     vulnerabilityScanner: Trivy
