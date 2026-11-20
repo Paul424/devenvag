@@ -4,8 +4,7 @@ kind: Kustomization
 resources:
   - secrets
   - provider-config.yaml
-  - projects.yaml
-  - robots.yaml
+  # - projects.yaml
 
 transformers:
   - |-

@@ -1,0 +1,99 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: gitlab-pat
+  namespace: gitlab
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - pods/exec
+    verbs:
+      - create
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: gitlab-pat
+  namespace: gitlab
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: gitlab-pat
+subjects:
+  - kind: ServiceAccount
+    name: gitlab-pat
+    namespace: gitlab
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: gitlab-pat-secrets
+  namespace: crossplane
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: gitlab-pat-secrets
+  namespace: crossplane
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: gitlab-pat-secrets
+subjects:
+  - kind: ServiceAccount
+    name: gitlab-pat
+    namespace: gitlab
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: Role
+# metadata:
+#   name: gitlab-pat-secrets
+#   namespace: gitlab-runner
+# rules:
+#   - apiGroups:
+#       - ""
+#     resources:
+#       - secrets
+#     verbs:
+#       - get
+#       - create
+#       - patch
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: RoleBinding
+# metadata:
+#   name: gitlab-pat-secrets
+#   namespace: gitlab-runner
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: Role
+#   name: gitlab-pat-secrets
+# subjects:
+#   - kind: ServiceAccount
+#     name: gitlab-pat
+#     namespace: gitlab
