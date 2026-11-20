@@ -80,7 +80,7 @@ kubectl create secret generic private-git -n env \
     --from-literal=password=$REGISTRY_UPSTREAM_PAT \
     --dry-run=client -o yaml | kubectl apply -f -
 
-# The top level kustomizations (platform01, 02, etc...)
+# The top level kustomizations (platform010, 020, etc...)
 kubectl apply -k $BASE/environments/dev01/env
 
 # Wait for cert-manager
