@@ -4,6 +4,16 @@
 - de skopeo sync naar Harbor zou ik het liefst vanuit het cluster doen; dwz een sync van zot naar harbor, maar de vraag is of het kan? skopeo gebruik disk als source.
 - 
 
+Voorheen	Wordt
+fluxr + PAT	project-AccessToken, accessLevel: 20, scope read_repository
+pusher	project-AccessToken, accessLevel: 40, scopes read_repository en write_repository
+runner / release-bot	project-AccessToken, accessLevel: 40, scopes api en write_repository
+
+Secrets overzetten / sync'en en key aanpassen met ExternalSecrets
+
+helm template gitlabrunner ./charts/external-secrets-2.4.3.tgz -f ./environments/base/external-secrets/common-external-secrets.yaml -f ./environments/base/external-secrets/secrets/common-external-secrets-secret.yaml -f ./environments/dev01/platform02/external-secrets/values-external-secrets.yaml -f ./environments/dev01/platform02/external-secrets/secrets/values-external-secrets-secret.yaml > ./logs/external-secrets.yaml
+
+
 [20261119]
 NEDs
 

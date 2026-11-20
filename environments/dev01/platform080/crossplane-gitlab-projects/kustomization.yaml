@@ -6,6 +6,8 @@ resources:
   - provider-config.yaml
   - group.yaml
   - project.yaml
+  - access-token.yaml
+  - secret-store.yaml
 
 transformers:
   - |-

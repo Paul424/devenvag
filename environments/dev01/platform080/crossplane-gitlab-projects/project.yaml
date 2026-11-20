@@ -1,3 +1,4 @@
+---
 apiVersion: projects.gitlab.crossplane.io/v1alpha1
 kind: Project
 metadata:
@@ -15,3 +16,23 @@ spec:
     initializeWithReadme: false
     defaultBranch: main
     description: Gitops repo for devenvag
+# ---
+# apiVersion: projects.gitlab.crossplane.io/v1alpha1
+# kind: ProtectedBranch
+# metadata:
+#   name: devenvag
+# spec:
+#   forProvider:
+#     branchName: "main"
+#     projectIdRef:
+#       name: devenvag
+#     pushAccessLevels:
+#       - accessLevel: 30  # developers and above can merge
+#     mergeAccessLevels:
+#       - accessLevel: 30  # Developer level
+#     unprotectAccessLevels:
+#       - accessLevel: 40  # Maintainer level
+#     allowForcePush: false
+#     codeOwnerApprovalRequired: true
+#   providerConfigRef:
+#     name: gitlab

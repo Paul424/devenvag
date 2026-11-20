@@ -1,0 +1,66 @@
+---
+apiVersion: projects.gitlab.crossplane.io/v1alpha1
+kind: AccessToken
+metadata:
+  name: devenvag-flux
+  annotations:
+    crossplane.io/poll-interval: 6h
+spec:
+  providerConfigRef:
+    name: gitlab
+  forProvider:
+    name: flux
+    accessLevel: 20
+    scopes:
+      - read_repository
+    expiresAt: "2027-11-01T00:00:00Z"
+    projectIdRef:
+      name: devenvag
+  writeConnectionSecretToRef:
+    name: gitlab-flux-token
+    namespace: crossplane
+---
+apiVersion: projects.gitlab.crossplane.io/v1alpha1
+kind: AccessToken
+metadata:
+  name: devenvag-pusher
+  annotations:
+    crossplane.io/poll-interval: 6h
+spec:
+  providerConfigRef:
+    name: gitlab
+  forProvider:
+    name: pusher
+    accessLevel: 40 # Maintainer to allow push to protected branch
+    scopes:
+      - read_repository
+      - write_repository
+    expiresAt: "2027-11-01T00:00:00Z"
+    projectIdRef:
+      name: devenvag
+  writeConnectionSecretToRef:
+    name: gitlab-pusher-token
+    namespace: crossplane
+---
+apiVersion: projects.gitlab.crossplane.io/v1alpha1
+kind: AccessToken
+metadata:
+  name: devenvag-runner
+  annotations:
+    crossplane.io/poll-interval: 6h
+spec:
+  providerConfigRef:
+    name: gitlab
+  forProvider:
+    name: runner
+    accessLevel: 40
+    scopes:
+      - api
+      - read_repository
+      - write_repository
+    expiresAt: "2027-11-01T00:00:00Z"
+    projectIdRef:
+      name: devenvag
+  writeConnectionSecretToRef:
+    name: gitlab-runner-token
+    namespace: crossplane
