@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - gitlab-pat
   # - gitlab-projects
-  # - gitlab-runner
+  - gitlab-runner
   - crossplane-gitlab-provider
 
 transformers:
