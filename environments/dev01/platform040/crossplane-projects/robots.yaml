@@ -1,4 +1,3 @@
----
 apiVersion: robot.harbor.crossplane.io/v1alpha1
 kind: Account
 metadata:
