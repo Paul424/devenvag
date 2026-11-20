@@ -3,4 +3,4 @@ kind: Kustomization
 
 resources:
   # - harbor-projects
-  - crossplane-providers
+  - crossplane-harbor-provider

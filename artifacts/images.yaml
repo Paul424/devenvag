@@ -46,6 +46,7 @@ ghcr.io:
     cloudnative-pg/postgresql: ["17.11-standard-trixie"]
     google/yamlfmt: ["0.21.0"]
     crossplane-contrib/provider-upjet-harbor: ["v1.4.3"]
+    crossplane-contrib/provider-gitlab: ["v0.23.2"]
 
 registry.k8s.io:
   images:

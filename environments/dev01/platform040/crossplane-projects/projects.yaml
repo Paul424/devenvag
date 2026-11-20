@@ -1,3 +1,4 @@
+# https://github.com/crossplane-contrib/provider-upjet-harbor/blob/main/examples/cluster/harbor/v1alpha1/project.yaml
 apiVersion: harbor.crossplane.io/v1alpha1
 kind: Project
 metadata:

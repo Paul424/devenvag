@@ -1,0 +1,10 @@
+
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-gitlab
+spec:
+  package: host.minikube.internal:5000/ghcr.io/crossplane-contrib/provider-gitlab:v0.23.2
+  packagePullPolicy: IfNotPresent
+  runtimeConfigRef:
+    name: gitlab-runtime

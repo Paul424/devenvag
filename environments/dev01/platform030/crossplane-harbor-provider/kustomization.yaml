@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - secrets
-  - trust.yaml
+  - deployment-runtime-config.yaml
   - providers.yaml
 
 transformers:

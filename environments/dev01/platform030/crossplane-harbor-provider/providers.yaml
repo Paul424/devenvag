@@ -1,0 +1,9 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-harbor
+spec:
+  package: host.minikube.internal:5000/ghcr.io/crossplane-contrib/provider-upjet-harbor:v1.4.3
+  packagePullPolicy: IfNotPresent
+  runtimeConfigRef:
+    name: harbor-runtime
